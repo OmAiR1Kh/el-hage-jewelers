@@ -28,6 +28,7 @@ const content = {
     viewProduct: "View Product",
     shareSuccess: "Product link copied to clipboard!",
     shareError: "Failed to copy link",
+    priceOnRequest: "Price on request",
   },
   ar: {
     share: "مشاركة",
@@ -38,6 +39,7 @@ const content = {
     viewProduct: "عرض المنتج",
     shareSuccess: "تم نسخ رابط المنتج!",
     shareError: "فشل في نسخ الرابط",
+    priceOnRequest: "السعر عند الطلب",
   },
 };
 
@@ -73,6 +75,11 @@ export function ProductClientPage({
     }
   };
 
+  // Get the product name and description based on language
+  const productName = language === "ar" ? product.nameAr : product.nameEn;
+  const productDescription =
+    language === "ar" ? product.descriptionAr : product.descriptionEn;
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -85,9 +92,7 @@ export function ProductClientPage({
               <FadeIn>
                 <ImageGallery
                   images={product.images || []}
-                  isOpen={false}
-                  onClose={() => {}}
-                  alt={language == "en" ? product.nameEn : product.nameAr}
+                  alt={productName || "Product"}
                 />
               </FadeIn>
 
@@ -96,14 +101,20 @@ export function ProductClientPage({
                 <div className="space-y-6">
                   <div>
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-playfair">
-                      {product.name}
+                      {productName}
                     </h1>
                     <div className="flex items-center justify-between mb-6">
-                      <span className="text-3xl font-bold text-gold-600">
-                        {product.price
-                          ? `$${product.price.toLocaleString()}`
-                          : "Price on request"}
-                      </span>
+                      {/* Price Display - Only show if showPrice is true */}
+                      {product.showPrice && product.price ? (
+                        <span className="text-3xl font-bold text-gold-600">
+                          ${product.price.toLocaleString()}
+                        </span>
+                      ) : (
+                        <span className="text-2xl font-medium text-gray-600">
+                          {t.priceOnRequest}
+                        </span>
+                      )}
+
                       <div className="flex space-x-3">
                         <Button
                           variant="outline"
@@ -131,44 +142,49 @@ export function ProductClientPage({
                     )}
                   </div>
 
-                  {product.description && (
+                  {productDescription && (
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900 mb-3 font-playfair">
                         {t.description}
                       </h2>
                       <p className="text-gray-600 leading-relaxed">
-                        {product.description}
+                        {productDescription}
                       </p>
                     </div>
                   )}
 
-                  {product.specifications &&
-                    Object.keys(product.specifications).length > 0 && (
-                      <div>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-3 font-playfair">
-                          {t.specifications}
-                        </h2>
-                        <div className="space-y-2">
-                          {Object.entries(product.specifications).map(
-                            ([key, value]) => (
-                              <div
-                                key={key}
-                                className="flex justify-between py-2 border-b border-gray-100"
-                              >
-                                <span className="text-gray-600 capitalize">
-                                  {key}:
-                                </span>
-                                <span className="text-gray-900 font-medium">
-                                  {value && typeof value == "string"
-                                    ? value
-                                    : ""}
-                                </span>
-                              </div>
-                            )
-                          )}
+                  {/* Specifications */}
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-3 font-playfair">
+                      {t.specifications}
+                    </h2>
+                    <div className="space-y-2">
+                      {product.metalType && (
+                        <div className="flex justify-between py-2 border-b border-gray-100">
+                          <span className="text-gray-600">Metal Type:</span>
+                          <span className="text-gray-900 font-medium capitalize">
+                            {product.metalType}
+                          </span>
                         </div>
-                      </div>
-                    )}
+                      )}
+                      {product.weight && (
+                        <div className="flex justify-between py-2 border-b border-gray-100">
+                          <span className="text-gray-600">Weight:</span>
+                          <span className="text-gray-900 font-medium">
+                            {product.weight}g
+                          </span>
+                        </div>
+                      )}
+                      {product.caratSize && (
+                        <div className="flex justify-between py-2 border-b border-gray-100">
+                          <span className="text-gray-600">Carat Size:</span>
+                          <span className="text-gray-900 font-medium">
+                            {product.caratSize}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </FadeIn>
             </div>
@@ -185,59 +201,68 @@ export function ProductClientPage({
                       className="flex space-x-6 pb-4"
                       style={{ width: "max-content" }}
                     >
-                      {relatedProducts.map((relatedProduct, index) => (
-                        <FadeIn key={relatedProduct.id} delay={index * 0.1}>
-                          <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 w-64 flex-shrink-0">
-                            <div className="relative aspect-square overflow-hidden">
-                              <Image
-                                src={
-                                  relatedProduct.images?.[0] ||
-                                  "/placeholder.svg?height=300&width=300"
-                                }
-                                alt={
-                                  language == "en"
-                                    ? relatedProduct.nameEn
-                                    : relatedProduct.nameAr
-                                }
-                                width={300}
-                                height={300}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                              <button
-                                className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-white"
-                                aria-label={t.addToFavorites}
-                              >
-                                <Heart className="h-4 w-4 text-gray-600 hover:text-red-500 transition-colors" />
-                              </button>
-                            </div>
-                            <div className="p-4">
-                              <h3 className="text-lg font-semibold text-gray-900 mb-2 font-playfair line-clamp-1">
-                                {relatedProduct.name}
-                              </h3>
-                              <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                {relatedProduct.description}
-                              </p>
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="text-lg font-bold text-gold-600">
-                                  {relatedProduct.price
-                                    ? `$${relatedProduct.price.toLocaleString()}`
-                                    : "Price on request"}
-                                </span>
-                              </div>
-                              <Link href={`/products/${relatedProduct.id}`}>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="w-full group bg-transparent"
+                      {relatedProducts.map((relatedProduct, index) => {
+                        const relatedProductName =
+                          language === "ar"
+                            ? relatedProduct.nameAr
+                            : relatedProduct.nameEn;
+                        const relatedProductDescription =
+                          language === "ar"
+                            ? relatedProduct.descriptionAr
+                            : relatedProduct.descriptionEn;
+
+                        return (
+                          <FadeIn key={relatedProduct._id} delay={index * 0.1}>
+                            <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 w-64 flex-shrink-0">
+                              <div className="relative aspect-square overflow-hidden">
+                                <Image
+                                  src={
+                                    relatedProduct.images?.[0] ||
+                                    "/placeholder.svg?height=300&width=300"
+                                  }
+                                  alt={relatedProductName || "Product"}
+                                  width={300}
+                                  height={300}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                                <button
+                                  className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-white"
+                                  aria-label={t.addToFavorites}
                                 >
-                                  {t.viewProduct}
-                                  <ArrowRight className="ml-2 h-3 w-3 group-hover:translate-x-1 transition-transform" />
-                                </Button>
-                              </Link>
+                                  <Heart className="h-4 w-4 text-gray-600 hover:text-red-500 transition-colors" />
+                                </button>
+                              </div>
+                              <div className="p-4">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2 font-playfair line-clamp-1">
+                                  {relatedProductName}
+                                </h3>
+                                <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                                  {relatedProductDescription}
+                                </p>
+                                <div className="flex items-center justify-between mb-3">
+                                  {/* Related Product Price - Only show if showPrice is true */}
+                                  <span className="text-lg font-bold text-gold-600">
+                                    {relatedProduct.showPrice &&
+                                    relatedProduct.price
+                                      ? `$${relatedProduct.price.toLocaleString()}`
+                                      : t.priceOnRequest}
+                                  </span>
+                                </div>
+                                <Link href={`/products/${relatedProduct._id}`}>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full group bg-transparent"
+                                  >
+                                    {t.viewProduct}
+                                    <ArrowRight className="ml-2 h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                                  </Button>
+                                </Link>
+                              </div>
                             </div>
-                          </div>
-                        </FadeIn>
-                      ))}
+                          </FadeIn>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
