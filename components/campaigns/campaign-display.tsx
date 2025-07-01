@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiService, type Campaign } from "@/lib/api";
 import { useLanguage } from "@/components/providers/language-provider";
-import { SafeImage } from "@/components/ui/safe-image";
+import Image from "next/image";
 
 interface CampaignDisplayProps {
   position?: "top" | "bottom" | "left" | "right" | "center" | "home";
@@ -220,8 +220,8 @@ export function CampaignDisplay({ position = "home" }: CampaignDisplayProps) {
 
                   {campaign.image && (
                     <div className="aspect-video w-full overflow-hidden">
-                      <SafeImage
-                        src={campaign.image}
+                      <Image
+                        src={campaign.image || "/placeholder.svg"}
                         alt={getCampaignTitle(campaign)}
                         width={400}
                         height={225}
@@ -260,8 +260,8 @@ export function CampaignDisplay({ position = "home" }: CampaignDisplayProps) {
                 }`}
               >
                 <div className="relative overflow-hidden rounded-lg shadow-lg">
-                  <SafeImage
-                    src={campaign.image}
+                  <Image
+                    src={campaign.image || "/placeholder.svg"}
                     alt={getCampaignTitle(campaign)}
                     width={1200}
                     height={200}
@@ -307,8 +307,8 @@ export function CampaignDisplay({ position = "home" }: CampaignDisplayProps) {
                   <X className="h-4 w-4 text-gray-700" />
                 </button>
 
-                <SafeImage
-                  src={campaign.image}
+                <Image
+                  src={campaign.image || "/placeholder.svg"}
                   alt={getCampaignTitle(campaign)}
                   width={400}
                   height={300}
