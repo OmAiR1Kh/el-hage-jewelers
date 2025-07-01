@@ -1,105 +1,114 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
-import Image from "next/image"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { ArrowLeft, Grid, List } from "lucide-react"
-import { Navbar } from "@/components/ui/navbar"
-import { Button } from "@/components/ui/button"
-import { useLanguage } from "@/components/providers/language-provider"
-import { apiService, type Category, type Product } from "@/lib/api"
-import { PageTransition } from "@/components/ui/page-transition"
-import { FadeIn } from "@/components/ui/fade-in"
-import { StaggerContainer, StaggerItem } from "@/components/ui/stagger-container"
-import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowLeft, Grid, List } from "lucide-react";
+import { Navbar } from "@/components/ui/navbar";
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/components/providers/language-provider";
+import { apiService, type Category, type Product } from "@/lib/api";
+import { PageTransition } from "@/components/ui/page-transition";
+import { FadeIn } from "@/components/ui/fade-in";
+import {
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/ui/stagger-container";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 function CategoryPageContent() {
-  const params = useParams()
-  const router = useRouter()
-  const { language } = useLanguage()
-  const [category, setCategory] = useState<Category | null>(null)
-  const [products, setProducts] = useState<Product[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [sortBy, setSortBy] = useState("name")
-  const [showFilters, setShowFilters] = useState(false)
+  const params = useParams();
+  const router = useRouter();
+  const { language } = useLanguage();
+  const [category, setCategory] = useState<Category | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState("name");
+  const [showFilters, setShowFilters] = useState(false);
 
   const metalTypes = [
     { value: "gold", labelEn: "Gold", labelAr: "ذهب" },
     { value: "silver", labelEn: "Silver", labelAr: "فضة" },
     { value: "platinum", labelEn: "Platinum", labelAr: "بلاتين" },
     { value: "other", labelEn: "Other", labelAr: "أخرى" },
-  ]
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true)
-        const categoryId = params.id as string
+        setIsLoading(true);
+        const categoryId = params.id as string;
 
         if (!categoryId) {
-          router.push("/categories")
-          return
+          router.push("/categories");
+          return;
         }
 
         const [categoryData, productsData] = await Promise.all([
           apiService.getCategory(categoryId),
           apiService.getProductsByCategory(categoryId),
-        ])
+        ]);
 
         if (!categoryData) {
-          router.push("/categories")
-          return
+          router.push("/categories");
+          return;
         }
 
-        setCategory(categoryData)
-        setProducts(productsData || [])
+        setCategory(categoryData);
+        setProducts(productsData || []);
       } catch (error) {
-        console.error("Failed to fetch category data:", error)
-        router.push("/categories")
+        console.error("Failed to fetch category data:", error);
+        router.push("/categories");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchData()
-  }, [params.id, router])
+    fetchData();
+  }, [params.id, router]);
 
   const getCategoryName = (category: Category) => {
-    return language === "ar" ? category.nameAr : category.nameEn
-  }
+    return language === "ar" ? category.nameAr : category.nameEn;
+  };
 
   const getCategoryDescription = (category: Category) => {
-    return language === "ar" ? category.descriptionAr : category.descriptionEn
-  }
+    return language === "ar" ? category.descriptionAr : category.descriptionEn;
+  };
 
   const getProductName = (product: Product) => {
-    return language === "ar" ? product.nameAr : product.nameEn
-  }
+    return language === "ar" ? product.nameAr : product.nameEn;
+  };
 
   const getProductDescription = (product: Product) => {
-    return language === "ar" ? product.descriptionAr : product.descriptionEn
-  }
+    return language === "ar" ? product.descriptionAr : product.descriptionEn;
+  };
 
   const getMetalTypeName = (metalType: string) => {
-    const metal = metalTypes.find((m) => m.value === metalType)
-    return metal ? (language === "ar" ? metal.labelAr : metal.labelEn) : metalType
-  }
+    const metal = metalTypes.find((m) => m.value === metalType);
+    return metal
+      ? language === "ar"
+        ? metal.labelAr
+        : metal.labelEn
+      : metalType;
+  };
 
   const sortedProducts = [...products].sort((a, b) => {
     switch (sortBy) {
       case "name":
-        return getProductName(a).localeCompare(getProductName(b))
+        return getProductName(a).localeCompare(getProductName(b));
       case "price":
-        return a.price - b.price
+        return a.price - b.price;
       case "newest":
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       default:
-        return 0
+        return 0;
     }
-  })
+  });
 
   if (isLoading) {
     return (
@@ -120,7 +129,7 @@ function CategoryPageContent() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!category) {
@@ -138,7 +147,7 @@ function CategoryPageContent() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -159,11 +168,16 @@ function CategoryPageContent() {
                   {language === "ar" ? "رجوع" : "Back"}
                 </button>
                 <span>/</span>
-                <Link href="/categories" className="hover:text-gray-900 transition-colors">
+                <Link
+                  href="/categories"
+                  className="hover:text-gray-900 transition-colors"
+                >
                   {language === "ar" ? "الفئات" : "Categories"}
                 </Link>
                 <span>/</span>
-                <span className="text-gray-900">{getCategoryName(category)}</span>
+                <span className="text-gray-900">
+                  {getCategoryName(category)}
+                </span>
               </div>
             </FadeIn>
           </div>
@@ -193,7 +207,9 @@ function CategoryPageContent() {
 
                   {getCategoryDescription(category) && (
                     <div className="prose prose-lg text-gray-600 max-w-none">
-                      <p className="leading-relaxed">{getCategoryDescription(category)}</p>
+                      <p className="leading-relaxed">
+                        {getCategoryDescription(category)}
+                      </p>
                     </div>
                   )}
 
@@ -201,7 +217,9 @@ function CategoryPageContent() {
                     <span>
                       {language === "ar"
                         ? `${products.length} منتج`
-                        : `${products.length} ${products.length === 1 ? "product" : "products"}`}
+                        : `${products.length} ${
+                            products.length === 1 ? "product" : "products"
+                          }`}
                     </span>
                   </div>
                 </div>
@@ -216,7 +234,9 @@ function CategoryPageContent() {
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
                 <FadeIn>
                   <h2 className="text-2xl sm:text-3xl font-playfair font-bold text-gray-900">
-                    {language === "ar" ? "المنتجات في هذه الفئة" : "Products in this Category"}
+                    {language === "ar"
+                      ? "المنتجات في هذه الفئة"
+                      : "Products in this Category"}
                   </h2>
                 </FadeIn>
 
@@ -227,9 +247,15 @@ function CategoryPageContent() {
                     onChange={(e) => setSortBy(e.target.value)}
                     className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-black focus:border-transparent"
                   >
-                    <option value="name">{language === "ar" ? "الاسم" : "Name"}</option>
-                    <option value="price">{language === "ar" ? "السعر" : "Price"}</option>
-                    <option value="newest">{language === "ar" ? "الأحدث" : "Newest"}</option>
+                    <option value="name">
+                      {language === "ar" ? "الاسم" : "Name"}
+                    </option>
+                    <option value="price">
+                      {language === "ar" ? "السعر" : "Price"}
+                    </option>
+                    <option value="newest">
+                      {language === "ar" ? "الأحدث" : "Newest"}
+                    </option>
                   </select>
 
                   {/* View Mode */}
@@ -268,7 +294,10 @@ function CategoryPageContent() {
                         transition={{ duration: 0.3 }}
                         className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100"
                       >
-                        <Link href={`/products/${product._id}`} className="block">
+                        <Link
+                          href={`/products/${product._id}`}
+                          className="block"
+                        >
                           <div className="aspect-square overflow-hidden">
                             <motion.div
                               whileHover={{ scale: 1.05 }}
@@ -291,7 +320,9 @@ function CategoryPageContent() {
                               {getProductName(product)}
                             </h3>
 
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">{getProductDescription(product)}</p>
+                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                              {getProductDescription(product)}
+                            </p>
 
                             <div className="flex items-center justify-between">
                               <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
@@ -299,7 +330,9 @@ function CategoryPageContent() {
                               </span>
 
                               {product.showPrice && (
-                                <span className="font-bold text-gray-900">${product.price.toLocaleString()}</span>
+                                <span className="font-bold text-gray-900">
+                                  ${product.price.toLocaleString()}
+                                </span>
                               )}
                             </div>
                           </div>
@@ -311,7 +344,10 @@ function CategoryPageContent() {
                         transition={{ duration: 0.3 }}
                         className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100"
                       >
-                        <Link href={`/products/${product._id}`} className="flex items-center">
+                        <Link
+                          href={`/products/${product._id}`}
+                          className="flex items-center"
+                        >
                           <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden">
                             <Image
                               src={product.mainImg || "/placeholder.svg"}
@@ -328,7 +364,9 @@ function CategoryPageContent() {
                               {getProductName(product)}
                             </h3>
 
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">{getProductDescription(product)}</p>
+                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                              {getProductDescription(product)}
+                            </p>
 
                             <div className="flex items-center justify-between">
                               <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
@@ -336,7 +374,9 @@ function CategoryPageContent() {
                               </span>
 
                               {product.showPrice && (
-                                <span className="font-bold text-gray-900">${product.price.toLocaleString()}</span>
+                                <span className="font-bold text-gray-900">
+                                  ${product.price.toLocaleString()}
+                                </span>
                               )}
                             </div>
                           </div>
@@ -358,7 +398,9 @@ function CategoryPageContent() {
                     <Grid className="h-12 w-12 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {language === "ar" ? "لا توجد منتجات في هذه الفئة" : "No products in this category"}
+                    {language === "ar"
+                      ? "لا توجد منتجات في هذه الفئة"
+                      : "No products in this category"}
                   </h3>
                   <p className="text-gray-600 mb-6">
                     {language === "ar"
@@ -366,7 +408,11 @@ function CategoryPageContent() {
                       : "Check back soon for new products"}
                   </p>
                   <Button asChild>
-                    <Link href="/products">{language === "ar" ? "تصفح جميع المنتجات" : "Browse All Products"}</Link>
+                    <Link href="/products">
+                      {language === "ar"
+                        ? "تصفح جميع المنتجات"
+                        : "Browse All Products"}
+                    </Link>
                   </Button>
                 </div>
               </FadeIn>
@@ -375,7 +421,7 @@ function CategoryPageContent() {
         </div>
       </div>
     </PageTransition>
-  )
+  );
 }
 
 export default function CategoryPage() {
@@ -383,5 +429,5 @@ export default function CategoryPage() {
     <ErrorBoundary>
       <CategoryPageContent />
     </ErrorBoundary>
-  )
+  );
 }

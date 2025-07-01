@@ -298,6 +298,21 @@ export const TestimonialSchema = z.object({
   image: z.string().url().optional(),
 });
 
+// Export the Product type for use in other files
+export type Product = z.infer<typeof ProductSchema> & {
+  id?: string;
+  name?: string;
+  description?: string;
+  specifications?: Record<string, any>;
+};
+
+export type Collection = z.infer<typeof CollectionSchema>;
+export type Category = z.infer<typeof CategorySchema>;
+export type Campaign = z.infer<typeof CampaignSchema>;
+export type Testimonial = z.infer<typeof TestimonialSchema>;
+export type SEOData = z.infer<typeof SEODataSchema>;
+export type HomeContent = z.infer<typeof HomeContentSchema>;
+
 // Validation functions
 export function validateHomeContent(data: unknown) {
   try {

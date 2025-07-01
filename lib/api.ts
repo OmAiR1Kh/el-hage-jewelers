@@ -569,3 +569,76 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
+
+// New functions for the product page
+export async function getProduct(
+  id: string,
+  options?: { location?: string; language?: string }
+): Promise<Product> {
+  const product = await apiService.getProduct(id);
+  if (!product) {
+    throw new Error(`Product with id ${id} not found`);
+  }
+
+  // Transform the API response to match the expected format
+  return {
+    id: product._id,
+    name: options?.language === "ar" ? product.nameAr : product.nameEn,
+    description:
+      options?.language === "ar"
+        ? product.descriptionAr
+        : product.descriptionEn,
+    images: product.images,
+    price: product.showPrice ? product.price : undefined,
+    categoryId:
+      typeof product.categoryId === "string"
+        ? product.categoryId
+        : product.categoryId._id,
+    specifications: {
+      metalType: product.metalType,
+      weight: `${product.weight}g`,
+      ...(product.caratSize && { caratSize: product.caratSize }),
+    },
+    ...product,
+  };
+}
+
+export async function getProducts(options?: {
+  location?: string;
+  language?: string;
+  categoryId?: string;
+  limit?: number;
+}): Promise<Product[]> {
+  let products: Product[] = [];
+
+  if (options?.categoryId) {
+    products = await apiService.getProductsByCategory(options.categoryId);
+  } else {
+    const result = await apiService.getAllProducts();
+    products = result.products;
+  }
+
+  // Transform the API response to match the expected format
+  return products
+    .map((product) => ({
+      id: product._id,
+      name: options?.language === "ar" ? product.nameAr : product.nameEn,
+      description:
+        options?.language === "ar"
+          ? product.descriptionAr
+          : product.descriptionEn,
+      images: product.images,
+      price: product.showPrice ? product.price : undefined,
+      categoryId:
+        typeof product.categoryId === "string"
+          ? product.categoryId
+          : product.categoryId._id,
+      specifications: {
+        metalType: product.metalType,
+        weight: `${product.weight}g`,
+        ...(product.caratSize && { caratSize: product.caratSize }),
+      },
+      ...product,
+    }))
+    .slice(0, options?.limit);
+}

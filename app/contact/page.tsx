@@ -1,36 +1,38 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Navbar } from "@/components/ui/navbar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useLanguage } from "@/components/providers/language-provider"
-import { MapPin, Phone, Mail, Clock } from "lucide-react"
+import { useState } from "react";
+import { Navbar } from "@/components/ui/navbar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useLanguage } from "@/components/providers/language-provider";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export default function ContactPage() {
-  const { t } = useLanguage()
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle form submission
-    console.log("Form submitted:", formData)
-  }
+    console.log("Form submitted:", formData);
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }))
-  }
+    }));
+  };
 
   return (
     <div className="min-h-screen">
@@ -39,22 +41,29 @@ export default function ContactPage() {
       <div className="pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h1 className="text-5xl font-playfair font-bold text-gray-900 mb-4">{t("nav.contact")}</h1>
+            <h1 className="text-5xl font-playfair font-bold text-gray-900 mb-4">
+              {t("nav.contact")}
+            </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Get in touch with us for inquiries about our jewelry collections or to schedule a private consultation.
+              Get in touch with us for inquiries about our jewelry collections
+              or to schedule a private consultation.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Information */}
             <div>
-              <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-8">Visit Our Showroom</h2>
+              <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-8">
+                Visit Our Showroom
+              </h2>
 
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <MapPin className="h-6 w-6 text-gray-600 mt-1" />
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Address</h3>
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      Address
+                    </h3>
                     <p className="text-gray-600">
                       123 Luxury Avenue
                       <br />
@@ -93,8 +102,15 @@ export default function ContactPage() {
               </div>
 
               <div className="mt-8">
-                <Button asChild className="bg-black text-white hover:bg-gray-800">
-                  <a href="https://calendly.com/elhagejewelers" target="_blank" rel="noopener noreferrer">
+                <Button
+                  asChild
+                  className="bg-black text-white hover:bg-gray-800"
+                >
+                  <a
+                    href="https://calendly.com/elhagejewelers"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {t("nav.appointment")}
                   </a>
                 </Button>
@@ -103,11 +119,16 @@ export default function ContactPage() {
 
             {/* Contact Form */}
             <div>
-              <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-8">Send us a Message</h2>
+              <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-8">
+                Send us a Message
+              </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Full Name
                   </label>
                   <Input
@@ -122,7 +143,10 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Email Address
                   </label>
                   <Input
@@ -137,7 +161,10 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="phone"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Phone Number
                   </label>
                   <Input
@@ -151,7 +178,10 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Message
                   </label>
                   <Textarea
@@ -165,7 +195,10 @@ export default function ContactPage() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full bg-black text-white hover:bg-gray-800">
+                <Button
+                  type="submit"
+                  className="w-full bg-black text-white hover:bg-gray-800"
+                >
                   Send Message
                 </Button>
               </form>
@@ -174,5 +207,5 @@ export default function ContactPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

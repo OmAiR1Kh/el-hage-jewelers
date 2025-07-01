@@ -1,65 +1,68 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useMemo } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { Search, Filter, X, ChevronDown } from "lucide-react"
-import { Navbar } from "@/components/ui/navbar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useLanguage } from "@/components/providers/language-provider"
-import { apiService, type Product, type Category } from "@/lib/api"
-import { PageTransition } from "@/components/ui/page-transition"
-import { FadeIn } from "@/components/ui/fade-in"
-import { StaggerContainer, StaggerItem } from "@/components/ui/stagger-container"
-import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { useState, useEffect, useMemo } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Search, Filter, X, ChevronDown } from "lucide-react";
+import { Navbar } from "@/components/ui/navbar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/components/providers/language-provider";
+import { apiService, type Product, type Category } from "@/lib/api";
+import { PageTransition } from "@/components/ui/page-transition";
+import { FadeIn } from "@/components/ui/fade-in";
+import {
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/ui/stagger-container";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 interface Filters {
-  category: string
-  metalType: string
-  search: string
+  category: string;
+  metalType: string;
+  search: string;
 }
 
 function ProductsPageContent() {
-  const { t, language, isRTL } = useLanguage()
-  const [products, setProducts] = useState<Product[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { t, language, isRTL } = useLanguage();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<Filters>({
     category: "",
     metalType: "",
     search: "",
-  })
-  const [showFilters, setShowFilters] = useState(false)
+  });
+  const [showFilters, setShowFilters] = useState(false);
 
   const metalTypes = [
     { value: "gold", labelEn: "Gold", labelAr: "ذهب" },
     { value: "silver", labelEn: "Silver", labelAr: "فضة" },
     { value: "platinum", labelEn: "Platinum", labelAr: "بلاتين" },
     { value: "other", labelEn: "Other", labelAr: "أخرى" },
-  ]
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         const [productsData, categoriesData] = await Promise.all([
           apiService.getAllProducts(),
           apiService.getActiveCategories(),
-        ])
+        ]);
 
-        setProducts(productsData.products || [])
-        setCategories(categoriesData || [])
+        setProducts(productsData.products || []);
+        setCategories(categoriesData || []);
       } catch (error) {
-        console.error("Failed to fetch products data:", error)
+        console.error("Failed to fetch products data:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -67,45 +70,56 @@ function ProductsPageContent() {
         !filters.category ||
         (typeof product.categoryId === "object"
           ? product.categoryId._id === filters.category
-          : product.categoryId === filters.category)
+          : product.categoryId === filters.category);
 
-      const matchesMetalType = !filters.metalType || product.metalType === filters.metalType
+      const matchesMetalType =
+        !filters.metalType || product.metalType === filters.metalType;
 
       const matchesSearch =
         !filters.search ||
         (language === "ar"
-          ? product.nameAr.toLowerCase().includes(filters.search.toLowerCase()) ||
-            product.descriptionAr.toLowerCase().includes(filters.search.toLowerCase())
-          : product.nameEn.toLowerCase().includes(filters.search.toLowerCase()) ||
-            product.descriptionEn.toLowerCase().includes(filters.search.toLowerCase()))
+          ? product.nameAr
+              .toLowerCase()
+              .includes(filters.search.toLowerCase()) ||
+            product.descriptionAr
+              .toLowerCase()
+              .includes(filters.search.toLowerCase())
+          : product.nameEn
+              .toLowerCase()
+              .includes(filters.search.toLowerCase()) ||
+            product.descriptionEn
+              .toLowerCase()
+              .includes(filters.search.toLowerCase()));
 
-      return matchesCategory && matchesMetalType && matchesSearch && product.isActive
-    })
-  }, [products, filters, language])
+      return (
+        matchesCategory && matchesMetalType && matchesSearch && product.isActive
+      );
+    });
+  }, [products, filters, language]);
 
   const handleFilterChange = (key: keyof Filters, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-  }
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   const clearFilters = () => {
-    setFilters({ category: "", metalType: "", search: "" })
-  }
+    setFilters({ category: "", metalType: "", search: "" });
+  };
 
   const getProductName = (product: Product) => {
-    return language === "ar" ? product.nameAr : product.nameEn
-  }
+    return language === "ar" ? product.nameAr : product.nameEn;
+  };
 
   const getProductDescription = (product: Product) => {
-    return language === "ar" ? product.descriptionAr : product.descriptionEn
-  }
+    return language === "ar" ? product.descriptionAr : product.descriptionEn;
+  };
 
   const getCategoryName = (categoryId: Product["categoryId"]) => {
     if (typeof categoryId === "object") {
-      return language === "ar" ? categoryId.nameAr : categoryId.nameEn
+      return language === "ar" ? categoryId.nameAr : categoryId.nameEn;
     }
-    const category = categories.find((cat) => cat.id === categoryId)
-    return category ? (language === "ar" ? category.name : category.name) : ""
-  }
+    const category = categories.find((cat) => cat._id === categoryId);
+    return category ? (language === "ar" ? category.nameAr : category.nameEn) : "";
+  };
 
   if (isLoading) {
     return (
@@ -117,7 +131,10 @@ function ProductsPageContent() {
               <div className="h-12 bg-gray-200 rounded w-1/3 mb-8"></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(12)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                  <div
+                    key={i}
+                    className="bg-white rounded-lg shadow-sm overflow-hidden"
+                  >
                     <div className="aspect-square bg-gray-200"></div>
                     <div className="p-4">
                       <div className="h-6 bg-gray-200 rounded mb-2"></div>
@@ -131,7 +148,7 @@ function ProductsPageContent() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -165,9 +182,15 @@ function ProductsPageContent() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <Input
                     type="text"
-                    placeholder={language === "ar" ? "البحث في المنتجات..." : "Search products..."}
+                    placeholder={
+                      language === "ar"
+                        ? "البحث في المنتجات..."
+                        : "Search products..."
+                    }
                     value={filters.search}
-                    onChange={(e) => handleFilterChange("search", e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("search", e.target.value)
+                    }
                     className="pl-10"
                   />
                 </div>
@@ -180,7 +203,11 @@ function ProductsPageContent() {
                 >
                   <Filter className="h-4 w-4" />
                   {language === "ar" ? "الفلاتر" : "Filters"}
-                  <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${
+                      showFilters ? "rotate-180" : ""
+                    }`}
+                  />
                 </Button>
               </div>
 
@@ -200,13 +227,19 @@ function ProductsPageContent() {
                       </label>
                       <select
                         value={filters.category}
-                        onChange={(e) => handleFilterChange("category", e.target.value)}
+                        onChange={(e) =>
+                          handleFilterChange("category", e.target.value)
+                        }
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
                       >
-                        <option value="">{language === "ar" ? "جميع الفئات" : "All Categories"}</option>
+                        <option value="">
+                          {language === "ar" ? "جميع الفئات" : "All Categories"}
+                        </option>
                         {categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
+                          <option key={category._id} value={category._id}>
+                            {language == "ar"
+                              ? category.nameAr
+                              : category.nameEn}
                           </option>
                         ))}
                       </select>
@@ -219,10 +252,14 @@ function ProductsPageContent() {
                       </label>
                       <select
                         value={filters.metalType}
-                        onChange={(e) => handleFilterChange("metalType", e.target.value)}
+                        onChange={(e) =>
+                          handleFilterChange("metalType", e.target.value)
+                        }
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
                       >
-                        <option value="">{language === "ar" ? "جميع المعادن" : "All Metals"}</option>
+                        <option value="">
+                          {language === "ar" ? "جميع المعادن" : "All Metals"}
+                        </option>
                         {metalTypes.map((metal) => (
                           <option key={metal.value} value={metal.value}>
                             {language === "ar" ? metal.labelAr : metal.labelEn}
@@ -257,7 +294,9 @@ function ProductsPageContent() {
                     <Search className="h-12 w-12 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {language === "ar" ? "لم يتم العثور على منتجات" : "No products found"}
+                    {language === "ar"
+                      ? "لم يتم العثور على منتجات"
+                      : "No products found"}
                   </h3>
                   <p className="text-gray-600">
                     {language === "ar"
@@ -284,7 +323,10 @@ function ProductsPageContent() {
                         transition={{ duration: 0.3 }}
                         className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group"
                       >
-                        <Link href={`/products/${product._id}`} className="block">
+                        <Link
+                          href={`/products/${product._id}`}
+                          className="block"
+                        >
                           <div className="aspect-square overflow-hidden">
                             <motion.div
                               whileHover={{ scale: 1.05 }}
@@ -313,14 +355,20 @@ function ProductsPageContent() {
                               {getProductName(product)}
                             </h3>
 
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">{getProductDescription(product)}</p>
+                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                              {getProductDescription(product)}
+                            </p>
 
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
                                   {language === "ar"
-                                    ? metalTypes.find((m) => m.value === product.metalType)?.labelAr
-                                    : metalTypes.find((m) => m.value === product.metalType)?.labelEn}
+                                    ? metalTypes.find(
+                                        (m) => m.value === product.metalType
+                                      )?.labelAr
+                                    : metalTypes.find(
+                                        (m) => m.value === product.metalType
+                                      )?.labelEn}
                                 </span>
                               </div>
 
@@ -344,7 +392,7 @@ function ProductsPageContent() {
         </div>
       </div>
     </PageTransition>
-  )
+  );
 }
 
 export default function ProductsPage() {
@@ -352,5 +400,5 @@ export default function ProductsPage() {
     <ErrorBoundary>
       <ProductsPageContent />
     </ErrorBoundary>
-  )
+  );
 }

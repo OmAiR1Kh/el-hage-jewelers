@@ -1,18 +1,21 @@
-import type { Metadata } from "next"
+import type { Metadata } from "next";
 
 export interface SEOData {
-  title: string
-  description: string
-  keywords: string[]
-  ogTitle?: string
-  ogDescription?: string
-  ogImage?: string
-  canonicalUrl?: string
-  structuredData?: any
-  alternateLanguages?: { [key: string]: string }
+  title: string;
+  description: string;
+  keywords: string[];
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  canonicalUrl?: string;
+  structuredData?: any;
+  alternateLanguages?: { [key: string]: string };
 }
 
-export function generateMetadata(seoData: SEOData, currentUrl: string): Metadata {
+export function generateMetadata(
+  seoData: SEOData,
+  currentUrl: string
+): Metadata {
   return {
     title: seoData.title,
     description: seoData.description,
@@ -65,14 +68,14 @@ export function generateMetadata(seoData: SEOData, currentUrl: string): Metadata
       yandex: "your-yandex-verification-code",
       yahoo: "your-yahoo-verification-code",
     },
-  }
+  };
 }
 
 export function generateStructuredData(type: string, data: any) {
   const baseData = {
     "@context": "https://schema.org",
     "@type": type,
-  }
+  };
 
   switch (type) {
     case "Organization":
@@ -100,7 +103,7 @@ export function generateStructuredData(type: string, data: any) {
           "https://twitter.com/elhagejewelers",
         ],
         ...data,
-      }
+      };
 
     case "Product":
       return {
@@ -114,7 +117,7 @@ export function generateStructuredData(type: string, data: any) {
         },
         category: data.category,
         ...data,
-      }
+      };
 
     case "BreadcrumbList":
       return {
@@ -125,9 +128,42 @@ export function generateStructuredData(type: string, data: any) {
           name: item.name,
           item: item.url,
         })),
-      }
+      };
 
     default:
-      return { ...baseData, ...data }
+      return { ...baseData, ...data };
   }
+}
+
+export function generateProductStructuredData(product: any) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: product.images || [],
+    brand: {
+      "@type": "Brand",
+      name: "El Hage Jewelers",
+    },
+    offers: product.price
+      ? {
+          "@type": "Offer",
+          price: product.price,
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+          seller: {
+            "@type": "Organization",
+            name: "El Hage Jewelers",
+          },
+        }
+      : undefined,
+    additionalProperty: product.specifications
+      ? Object.entries(product.specifications).map(([key, value]) => ({
+          "@type": "PropertyValue",
+          name: key,
+          value: value,
+        }))
+      : [],
+  };
 }
