@@ -65,19 +65,6 @@ export const HomeContentSchema = z.object({
     })
     .optional(),
 
-  // Featured section - flexible structure to handle any featured content
-  featuredSection: z
-    .object({
-      titleAr: z.string().optional(),
-      titleEn: z.string().optional(),
-      contentAr: z.string().optional(),
-      contentEn: z.string().optional(),
-      items: z.array(z.any()).default([]),
-      displayType: z.string().optional(),
-      showOnHomepage: z.boolean().default(true),
-    })
-    .optional(),
-
   // SEO
   seo: SEODataSchema.optional(),
 
@@ -112,52 +99,10 @@ export const HomeContentSchema = z.object({
     .default([]),
 
   // Featured collections
-  featuredCollections: z
-    .array(
-      z.object({
-        collectionId: z
-          .object({
-            _id: z.string(),
-            nameAr: z.string(),
-            nameEn: z.string(),
-            descriptionAr: z.string(),
-            descriptionEn: z.string(),
-            bannerImage: z.string().url(),
-            thumbnailImage: z.string().url(),
-            isActive: z.boolean(),
-            isFeatured: z.boolean(),
-            releaseDate: z.string(),
-            createdAt: z.string(),
-            updatedAt: z.string(),
-          })
-          .optional(),
-        displayOrder: z.number(),
-        _id: z.string(),
-      })
-    )
-    .default([]),
+  featuredCollections: z.array(z.any()).default([]),
 
   // Testimonials
-  testimonials: z
-    .array(
-      z.object({
-        testimonialId: z
-          .object({
-            _id: z.string(),
-            name: z.string(),
-            content: z.string(),
-            rating: z.number(),
-            image: z.string().url().optional(),
-            isActive: z.boolean(),
-            createdAt: z.string(),
-            updatedAt: z.string(),
-          })
-          .optional(),
-        displayOrder: z.number(),
-        _id: z.string(),
-      })
-    )
-    .default([]),
+  testimonials: z.array(z.any()).default([]),
 
   // Meta fields
   _id: z.string().optional(),
@@ -297,21 +242,6 @@ export const TestimonialSchema = z.object({
   rating: z.number().min(1).max(5).default(5),
   image: z.string().url().optional(),
 });
-
-// Export the Product type for use in other files
-export type Product = z.infer<typeof ProductSchema> & {
-  id?: string;
-  name?: string;
-  description?: string;
-  specifications?: Record<string, any>;
-};
-
-export type Collection = z.infer<typeof CollectionSchema>;
-export type Category = z.infer<typeof CategorySchema>;
-export type Campaign = z.infer<typeof CampaignSchema>;
-export type Testimonial = z.infer<typeof TestimonialSchema>;
-export type SEOData = z.infer<typeof SEODataSchema>;
-export type HomeContent = z.infer<typeof HomeContentSchema>;
 
 // Validation functions
 export function validateHomeContent(data: unknown) {
