@@ -337,7 +337,7 @@ export function Footer() {
                   </div>
                   <div className="pt-4">
                     <a
-                      href="https://calendly.com/elhagejewelers"
+                      href="https://wa.me/96171444454"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

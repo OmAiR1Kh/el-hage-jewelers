@@ -209,7 +209,7 @@ export function Navbar() {
                   className="bg-black text-white hover:bg-gray-800 transition-all duration-300 focus-visible"
                 >
                   <a
-                    href="https://calendly.com/elhagejewelers"
+                    href="https://wa.me/96171444454"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -377,7 +377,7 @@ export function Navbar() {
                       className="w-full bg-black text-white hover:bg-gray-800 transition-all duration-300"
                     >
                       <a
-                        href="https://calendly.com/elhagejewelers"
+                        href="https://wa.me/96171444454"
                         target="_blank"
                         rel="noopener noreferrer"
                       >

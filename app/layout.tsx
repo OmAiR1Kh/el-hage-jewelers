@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/components/providers/language-provider";
 import { LocationProvider } from "@/components/providers/location-provider";
 import { generateStructuredData } from "@/lib/seo";
 import { Footer } from "@/components/ui/footer";
+import WhatsAppIcon from "@/components/whatsapp";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -125,6 +126,7 @@ export default function RootLayout({
             <Footer />
           </LanguageProvider>
         </LocationProvider>
+        <WhatsAppIcon />
       </body>
     </html>
   );

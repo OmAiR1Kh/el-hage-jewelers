@@ -107,7 +107,7 @@ export default function ContactPage() {
                   className="bg-black text-white hover:bg-gray-800"
                 >
                   <a
-                    href="https://calendly.com/elhagejewelers"
+                    href="https://wa.me/96171444454"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
