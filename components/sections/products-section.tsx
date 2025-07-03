@@ -72,53 +72,59 @@ export function ProductsSection() {
   const router = useRouter();
 
   return (
-    <section className="py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-4">
-            {t("products.title")}
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {t("products.subtitle")}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {featuredProducts.map((product) => (
-            <div
-              key={product._id}
-              className="group cursor-pointer"
-              onClick={() => {
-                router.push(`/products/${product.productId}`);
-              }}
-            >
-              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
-                <Image
-                  src={
-                    product.productId.mainImg ||
-                    "/placeholder.svg?height=300&width=300"
-                  }
-                  alt={getProductName(product)}
-                  width={300}
-                  height={300}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-1 group-hover:text-gray-600 transition-colors">
-                {getProductName(product)}
-              </h3>
-              <p className="text-gray-600 text-sm line-clamp-2">
-                {getProductDescription(product)}
+    <>
+      {featuredProducts.length > 0 ? (
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-4">
+                {t("products.title")}
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                {t("products.subtitle")}
               </p>
-              {product.productId.showPrice && (
-                <p className="text-lg font-bold text-gray-900 mt-2">
-                  ${product.productId.price.toLocaleString()}
-                </p>
-              )}
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {featuredProducts.map((product) => (
+                <div
+                  key={product._id}
+                  className="group cursor-pointer"
+                  onClick={() => {
+                    router.push(`/products/${product.productId}`);
+                  }}
+                >
+                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
+                    <Image
+                      src={
+                        product.productId.mainImg ||
+                        "/placeholder.svg?height=300&width=300"
+                      }
+                      alt={getProductName(product)}
+                      width={300}
+                      height={300}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-1 group-hover:text-gray-600 transition-colors">
+                    {getProductName(product)}
+                  </h3>
+                  <p className="text-gray-600 text-sm line-clamp-2">
+                    {getProductDescription(product)}
+                  </p>
+                  {product.productId.showPrice && (
+                    <p className="text-lg font-bold text-gray-900 mt-2">
+                      ${product.productId.price.toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : (
+        <></>
+      )}
+    </>
   );
 }

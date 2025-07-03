@@ -60,65 +60,73 @@ export function CollectionsSection() {
   }
 
   return (
-    <section className="spacing-section bg-gray-50">
-      <div className="container-responsive">
-        <FadeIn className="text-center mb-12 sm:mb-16">
-          <h2 className="text-responsive-xl font-playfair font-bold text-gray-900 mb-4 sm:mb-6">
-            {t("collections.title")}
-          </h2>
-          <p className="text-responsive-md text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            {t("collections.subtitle")}
-          </p>
-        </FadeIn>
+    <>
+      {collections.length > 0 ? (
+        <section className="spacing-section bg-gray-50">
+          <div className="container-responsive">
+            <FadeIn className="text-center mb-12 sm:mb-16">
+              <h2 className="text-responsive-xl font-playfair font-bold text-gray-900 mb-4 sm:mb-6">
+                {t("collections.title")}
+              </h2>
+              <p className="text-responsive-md text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                {t("collections.subtitle")}
+              </p>
+            </FadeIn>
 
-        <StaggerContainer className="grid-responsive-cards">
-          {collections.map((collection, index) => (
-            <StaggerItem key={collection._id}>
-              <motion.div
-                whileHover={{ y: -8 }}
-                transition={{ duration: 0.3 }}
-                className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
-              >
-                <Link
-                  href={`/collections/${collection._id}`}
-                  className="block focus-visible"
-                >
-                  <div className="aspect-square overflow-hidden">
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.5 }}
-                      className="w-full h-full"
+            <StaggerContainer className="grid-responsive-cards">
+              {collections.map((collection, index) => (
+                <StaggerItem key={collection._id}>
+                  <motion.div
+                    whileHover={{ y: -8 }}
+                    transition={{ duration: 0.3 }}
+                    className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+                  >
+                    <Link
+                      href={`/collections/${collection._id}`}
+                      className="block focus-visible"
                     >
-                      <Image
-                        src={collection.bannerImage || "/placeholder.svg"}
-                        alt={
-                          language == "en"
+                      <div className="aspect-square overflow-hidden">
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.5 }}
+                          className="w-full h-full"
+                        >
+                          <Image
+                            src={collection.bannerImage || "/placeholder.svg"}
+                            alt={
+                              language == "en"
+                                ? collection.nameEn
+                                : collection.nameAr
+                            }
+                            width={400}
+                            height={400}
+                            className="w-full h-full object-cover"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          />
+                        </motion.div>
+                      </div>
+                      <div className="p-4 sm:p-6">
+                        <h3 className="text-lg sm:text-xl font-playfair font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors">
+                          {language == "en"
                             ? collection.nameEn
-                            : collection.nameAr
-                        }
-                        width={400}
-                        height={400}
-                        className="w-full h-full object-cover"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
-                    </motion.div>
-                  </div>
-                  <div className="p-4 sm:p-6">
-                    <h3 className="text-lg sm:text-xl font-playfair font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors">
-                      {language == "en" ? collection.nameEn : collection.nameAr}
-                    </h3>
-                    <p className="text-sm sm:text-base text-gray-600 line-clamp-2 leading-relaxed">
-                      {language == "en"
-                        ? collection.descriptionEn
-                        : collection.descriptionAr}
-                    </p>
-                  </div>
-                </Link>
-              </motion.div>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-      </div>
-    </section>
+                            : collection.nameAr}
+                        </h3>
+                        <p className="text-sm sm:text-base text-gray-600 line-clamp-2 leading-relaxed">
+                          {language == "en"
+                            ? collection.descriptionEn
+                            : collection.descriptionAr}
+                        </p>
+                      </div>
+                    </Link>
+                  </motion.div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </div>
+        </section>
+      ) : (
+        <></>
+      )}
+    </>
   );
 }
