@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useLanguage } from "@/components/providers/language-provider";
 import { useLocation } from "@/components/providers/location-provider";
 import { apiService, type HomeContent } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export function ProductsSection() {
   const { t, language } = useLanguage();
@@ -68,6 +69,8 @@ export function ProductsSection() {
       : product.productId.descriptionEn;
   };
 
+  const router = useRouter();
+
   return (
     <section className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -82,7 +85,13 @@ export function ProductsSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {featuredProducts.map((product) => (
-            <div key={product._id} className="group cursor-pointer">
+            <div
+              key={product._id}
+              className="group cursor-pointer"
+              onClick={() => {
+                router.push(`/products/${product.productId}`);
+              }}
+            >
               <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
                 <Image
                   src={
