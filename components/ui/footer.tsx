@@ -382,7 +382,7 @@ export function Footer() {
                 <p className="text-gray-300 mb-6 text-sm">
                   {t.newsletter.description}
                 </p>
-                <form onSubmit={handleNewsletterSubmit} className="flex gap-3">
+                {/* <form onSubmit={handleNewsletterSubmit} className="flex gap-3">
                   <div className="flex-1 relative">
                     <input
                       type="email"
@@ -405,7 +405,7 @@ export function Footer() {
                       {t.newsletter.subscribe}
                     </Button>
                   </motion.div>
-                </form>
+                </form> */}
               </div>
             </div>
           </FadeIn>
