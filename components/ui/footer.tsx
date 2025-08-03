@@ -87,6 +87,8 @@ export function Footer() {
   const currentLocation =
     locationData[locationKey]?.[language] || locationData.lebanon[language];
 
+  const currentTime = new Date().getFullYear();
+
   const content = {
     en: {
       brand: {
@@ -129,7 +131,7 @@ export function Footer() {
         subscribe: "Subscribe",
       },
       legal: {
-        copyright: "© 2024 El Hage Jewelers. All rights reserved.",
+        copyright: `© ${currentTime} El Hage Jewelers. All rights reserved.`,
         links: [
           { name: "Privacy Policy", href: "/privacy" },
           { name: "Terms & Conditions", href: "/terms" },
@@ -178,7 +180,7 @@ export function Footer() {
         subscribe: "اشترك",
       },
       legal: {
-        copyright: "© 2024 مجوهرات الحاج. جميع الحقوق محفوظة.",
+        copyright: `© ${currentTime} مجوهرات الحاج. جميع الحقوق محفوظة.`,
         links: [
           { name: "سياسة الخصوصية", href: "/privacy" },
           { name: "الشروط والأحكام", href: "/terms" },
@@ -449,8 +451,8 @@ export function Footer() {
           <FadeIn delay={0.6}>
             <div className="border-t border-gray-800 pt-8">
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                <p className="text-gray-400 text-sm">{t.legal.copyright}</p>
-                <div className="flex space-x-6">
+                <p className="text-gray-300 text-sm">{t.legal.copyright}</p>
+                {/* <div className="flex space-x-6">
                   {t.legal.links.map((link) => (
                     <Link
                       key={link.name}
@@ -460,7 +462,7 @@ export function Footer() {
                       {link.name}
                     </Link>
                   ))}
-                </div>
+                </div> */}
               </div>
             </div>
           </FadeIn>
