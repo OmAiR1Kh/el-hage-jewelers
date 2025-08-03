@@ -146,6 +146,42 @@ export const CampaignSchema = z.object({
   updatedAt: z.string().default(new Date().toISOString()),
 });
 
+// export const CollectionSchema = z.object({
+//   _id: z.string().min(1),
+//   nameAr: z.string().min(1).default("مجموعة بدون اسم"),
+//   nameEn: z.string().min(1).default("Untitled Collection"),
+//   descriptionAr: z.string().min(1).default("وصف المجموعة"),
+//   descriptionEn: z
+//     .string()
+//     .min(1)
+//     .default("A beautiful collection of fine jewelry"),
+//   bannerImage: z
+//     .string()
+//     .url()
+//     .default("/placeholder.svg?height=600&width=1200"),
+//   thumbnailImage: z
+//     .string()
+//     .url()
+//     .default("/placeholder.svg?height=400&width=400"),
+//   galleryImages: z.array(z.string().url()).default([]),
+//   pageContent: z
+//     .object({
+//       titleAr: z.string().optional(),
+//       titleEn: z.string().optional(),
+//       contentAr: z.string().optional(),
+//       contentEn: z.string().optional(),
+//       metaDescriptionAr: z.string().optional(),
+//       metaDescriptionEn: z.string().optional(),
+//       keywords: z.array(z.string()).default([]),
+//     })
+//     .optional(),
+//   isActive: z.boolean().default(true),
+//   isFeatured: z.boolean().default(false),
+//   releaseDate: z.string().default(new Date().toISOString()),
+//   createdAt: z.string().default(new Date().toISOString()),
+//   updatedAt: z.string().default(new Date().toISOString()),
+// });
+
 export const CollectionSchema = z.object({
   _id: z.string().min(1),
   nameAr: z.string().min(1).default("مجموعة بدون اسم"),
@@ -155,10 +191,12 @@ export const CollectionSchema = z.object({
     .string()
     .min(1)
     .default("A beautiful collection of fine jewelry"),
+  bannerVideo: z.string().url().optional().nullable(), // Changed from bannerImage to bannerVideo, made optional and nullable
   bannerImage: z
     .string()
     .url()
-    .default("/placeholder.svg?height=600&width=1200"),
+    .default("/placeholder.svg?height=600&width=1200")
+    .optional(),
   thumbnailImage: z
     .string()
     .url()
@@ -194,25 +232,25 @@ export const CategorySchema = z.object({
   updatedAt: z.string().default(new Date().toISOString()),
 });
 
-export const ProductSchema = z.object({
-  _id: z.string().min(1),
-  nameAr: z.string().min(1).default("منتج بدون اسم"),
-  nameEn: z.string().min(1).default("Untitled Product"),
-  descriptionAr: z.string().min(1).default("وصف المنتج"),
-  descriptionEn: z.string().min(1).default("Product description"),
-  images: z
-    .array(z.string().url())
-    .min(1)
-    .default(["/placeholder.svg?height=300&width=300"]),
-  mainImg: z.string().url().default("/placeholder.svg?height=400&width=400"),
-  price: z.number().min(0).default(0),
-  showPrice: z.boolean().default(true),
+// In your validation.ts file, update the Product schema:
+const ProductSchema = z.object({
+  _id: z.string(),
+  nameEn: z.string(),
+  nameAr: z.string(),
+  descriptionEn: z.string(),
+  descriptionAr: z.string(),
+  images: z.array(z.string()),
+  mainImg: z.string().nullable(),
+  price: z.number(),
+  filterPrice: z.number().optional(), // Add this
+  skuPrice: z.string().optional(), // Add this
+  showPrice: z.boolean(),
   categoryId: z.union([
     z.string(),
     z.object({
       _id: z.string(),
-      nameEn: z.string().default("Category"),
-      nameAr: z.string().default("فئة"),
+      nameEn: z.string(),
+      nameAr: z.string(),
     }),
   ]),
   collectionId: z
@@ -220,19 +258,20 @@ export const ProductSchema = z.object({
       z.string(),
       z.object({
         _id: z.string(),
-        nameEn: z.string().default("Collection"),
-        nameAr: z.string().default("مجموعة"),
+        nameEn: z.string(),
+        nameAr: z.string(),
       }),
     ])
-    .optional(),
-  metalType: z.enum(["gold", "silver", "platinum", "other"]).default("gold"),
+    .nullable()
+    .optional(), // Make this nullable and optional
+  metalType: z.enum(["gold", "silver", "platinum", "other"]),
   caratSize: z.number().optional(),
-  weight: z.number().min(0).default(0),
-  stock: z.number().min(0).default(0),
-  featured: z.boolean().default(false),
-  isActive: z.boolean().default(true),
-  createdAt: z.string().default(new Date().toISOString()),
-  updatedAt: z.string().default(new Date().toISOString()),
+  weight: z.number().optional(),
+  stock: z.number(),
+  featured: z.boolean(),
+  isActive: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export const TestimonialSchema = z.object({

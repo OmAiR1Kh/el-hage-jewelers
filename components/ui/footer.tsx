@@ -16,6 +16,7 @@ import {
   MapPin,
   Clock,
   Calendar,
+  Send,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/providers/language-provider";
@@ -194,21 +195,25 @@ export function Footer() {
       icon: Facebook,
       href: "https://facebook.com/elhagejewelers",
       label: "Facebook",
+      color: "hover:bg-blue-600",
     },
     {
       icon: Instagram,
       href: "https://instagram.com/elhagejewelers",
       label: "Instagram",
+      color: "hover:bg-pink-600",
     },
     {
       icon: Twitter,
       href: "https://twitter.com/elhagejewelers",
       label: "Twitter",
+      color: "hover:bg-sky-500",
     },
     {
       icon: Youtube,
       href: "https://youtube.com/elhagejewelers",
       label: "YouTube",
+      color: "hover:bg-red-600",
     },
   ];
 
@@ -220,7 +225,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gradient-to-b from-gray-900 to-black text-white">
       <div className="container mx-auto px-4 py-16">
         <StaggerContainer>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -236,21 +241,27 @@ export function Footer() {
                     className="h-12 w-auto brightness-0 invert"
                   />
                 </Link>
-                <p className="text-gray-300 mb-6 leading-relaxed">
+                <p className="text-gray-300 mb-6 leading-relaxed text-sm">
                   {t.brand.description}
                 </p>
                 <div>
-                  <h4 className="font-semibold mb-4">{t.brand.followUs}</h4>
-                  <div className="flex space-x-4">
+                  <h4 className="font-semibold mb-4 text-amber-400">
+                    {t.brand.followUs}
+                  </h4>
+                  <div
+                    className={`flex gap-3 ${
+                      language === "ar" ? "flex-row-reverse" : ""
+                    }`}
+                  >
                     {socialLinks.map((social) => (
                       <motion.a
                         key={social.label}
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        whileHover={{ scale: 1.1 }}
+                        whileHover={{ scale: 1.1, y: -2 }}
                         whileTap={{ scale: 0.95 }}
-                        className="p-2 bg-gray-800 rounded-full hover:bg-gold-600 transition-colors duration-300"
+                        className={`p-3 bg-gray-800 rounded-full transition-all duration-300 ${social.color} shadow-lg hover:shadow-xl`}
                         aria-label={social.label}
                       >
                         <social.icon className="h-5 w-5" />
@@ -264,7 +275,7 @@ export function Footer() {
             {/* Quick Links */}
             <FadeIn delay={0.1}>
               <div>
-                <h3 className="text-lg font-semibold mb-6 font-playfair">
+                <h3 className="text-lg font-semibold mb-6 font-playfair text-amber-400">
                   {t.quickLinks.title}
                 </h3>
                 <ul className="space-y-3">
@@ -272,7 +283,7 @@ export function Footer() {
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className="text-gray-300 hover:text-gold-400 transition-colors duration-300"
+                        className="text-gray-300 hover:text-amber-400 transition-colors duration-300 text-sm hover:translate-x-1 inline-block"
                       >
                         {link.name}
                       </Link>
@@ -285,13 +296,16 @@ export function Footer() {
             {/* Services */}
             <FadeIn delay={0.2}>
               <div>
-                <h3 className="text-lg font-semibold mb-6 font-playfair">
+                <h3 className="text-lg font-semibold mb-6 font-playfair text-amber-400">
                   {t.services.title}
                 </h3>
                 <ul className="space-y-3">
                   {t.services.items.map((service) => (
-                    <li key={service} className="text-gray-300">
-                      {service}
+                    <li
+                      key={service}
+                      className="text-gray-300 text-sm leading-relaxed"
+                    >
+                      • {service}
                     </li>
                   ))}
                 </ul>
@@ -301,55 +315,57 @@ export function Footer() {
             {/* Contact Info */}
             <FadeIn delay={0.3}>
               <div>
-                <h3 className="text-lg font-semibold mb-6 font-playfair">
+                <h3 className="text-lg font-semibold mb-6 font-playfair text-amber-400">
                   {t.contact.title}
                 </h3>
                 <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <MapPin className="h-5 w-5 text-gold-400 mt-1 flex-shrink-0" />
-                    <span className="text-gray-300">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="h-5 w-5 text-amber-400 mt-1 flex-shrink-0" />
+                    <span className="text-gray-300 text-sm leading-relaxed">
                       {currentLocation.address}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Phone className="h-5 w-5 text-gold-400 flex-shrink-0" />
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-5 w-5 text-amber-400 flex-shrink-0" />
                     <a
                       href={`tel:${currentLocation.phone}`}
-                      className="text-gray-300 hover:text-gold-400 transition-colors"
+                      className="text-gray-300 hover:text-amber-400 transition-colors text-sm"
                     >
                       {currentLocation.phone}
                     </a>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Mail className="h-5 w-5 text-gold-400 flex-shrink-0" />
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5 text-amber-400 flex-shrink-0" />
                     <a
                       href={`mailto:${t.contact.email}`}
-                      className="text-gray-300 hover:text-gold-400 transition-colors"
+                      className="text-gray-300 hover:text-amber-400 transition-colors text-sm"
                     >
                       {t.contact.email}
                     </a>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Clock className="h-5 w-5 text-gold-400 flex-shrink-0" />
-                    <span className="text-gray-300">
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-5 w-5 text-amber-400 flex-shrink-0" />
+                    <span className="text-gray-300 text-sm">
                       {currentLocation.hours}
                     </span>
                   </div>
                   <div className="pt-4">
-                    <a
-                      href="https://wa.me/96171444454"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full bg-transparent border-gold-400 text-gold-400 hover:bg-gold-400 hover:text-gray-900"
+                      <a
+                        href="https://wa.me/96171444454"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
                       >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {t.contact.bookAppointment}
-                      </Button>
-                    </a>
+                        <Button className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {t.contact.bookAppointment}
+                        </Button>
+                      </a>
+                    </motion.div>
                   </div>
                 </div>
               </div>
@@ -360,25 +376,35 @@ export function Footer() {
           <FadeIn delay={0.4}>
             <div className="border-t border-gray-800 pt-12 mb-12">
               <div className="max-w-md mx-auto text-center">
-                <h3 className="text-xl font-semibold mb-4 font-playfair">
+                <h3 className="text-xl font-semibold mb-4 font-playfair text-amber-400">
                   {t.newsletter.title}
                 </h3>
-                <p className="text-gray-300 mb-6">{t.newsletter.description}</p>
+                <p className="text-gray-300 mb-6 text-sm">
+                  {t.newsletter.description}
+                </p>
                 <form onSubmit={handleNewsletterSubmit} className="flex gap-3">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t.newsletter.placeholder}
-                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gold-400"
-                    required
-                  />
-                  <Button
-                    type="submit"
-                    className="bg-gold-600 hover:bg-gold-700 text-gray-900"
+                  <div className="flex-1 relative">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t.newsletter.placeholder}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
+                      required
+                    />
+                  </div>
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    {t.newsletter.subscribe}
-                  </Button>
+                    <Button
+                      type="submit"
+                      className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-medium px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      {t.newsletter.subscribe}
+                    </Button>
+                  </motion.div>
                 </form>
               </div>
             </div>
@@ -387,13 +413,17 @@ export function Footer() {
           {/* All Locations */}
           <FadeIn delay={0.5}>
             <div className="border-t border-gray-800 pt-12 mb-12">
-              <h3 className="text-xl font-semibold mb-8 text-center font-playfair">
+              <h3 className="text-xl font-semibold mb-8 text-center font-playfair text-amber-400">
                 {t.contact.locations}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {Object.entries(locationData).map(([key, location]) => (
-                  <div key={key} className="text-center">
-                    <h4 className="font-semibold mb-3 text-gold-400">
+                  <motion.div
+                    key={key}
+                    className="text-center p-6 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-amber-400/50 transition-all duration-300"
+                    whileHover={{ y: -5 }}
+                  >
+                    <h4 className="font-semibold mb-3 text-amber-400 text-lg">
                       {key === "lebanon"
                         ? "Lebanon"
                         : key === "uae"
@@ -401,11 +431,15 @@ export function Footer() {
                         : "Saudi Arabia"}
                     </h4>
                     <div className="space-y-2 text-sm text-gray-300">
-                      <p>{location[language].address}</p>
-                      <p>{location[language].phone}</p>
-                      <p>{location[language].hours}</p>
+                      <p className="leading-relaxed">
+                        {location[language].address}
+                      </p>
+                      <p className="font-medium">{location[language].phone}</p>
+                      <p className="text-amber-200">
+                        {location[language].hours}
+                      </p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -421,7 +455,7 @@ export function Footer() {
                     <Link
                       key={link.name}
                       href={link.href}
-                      className="text-gray-400 hover:text-gold-400 text-sm transition-colors duration-300"
+                      className="text-gray-400 hover:text-amber-400 text-sm transition-colors duration-300"
                     >
                       {link.name}
                     </Link>

@@ -11,8 +11,9 @@ import {
   validateSEOData,
 } from "./validation";
 
-const API_BASE_URL = "https://api.elhagejewelers.com/api/v1";
+// const API_BASE_URL = "https://api.elhagejewelers.com/api/v1";
 
+const API_BASE_URL = "http://localhost:8000/api/v1";
 export interface HomeContent {
   hero?: {
     titleAr: string;
@@ -102,7 +103,8 @@ export interface Collection {
   nameEn: string;
   descriptionAr: string;
   descriptionEn: string;
-  bannerImage: string;
+  bannerImage?: string;
+  bannerVideo?: string;
   thumbnailImage: string;
   galleryImages: string[];
   pageContent?: {
@@ -165,6 +167,8 @@ export interface Product {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  skuPrice?: any;
+  filterPrice?: number;
 }
 
 export interface Testimonial {

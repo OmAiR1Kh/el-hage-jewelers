@@ -1,11 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, Star, Expand, Grid, List } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  Star,
+  Expand,
+  Grid,
+  List,
+  Play,
+  AlertCircle,
+} from "lucide-react";
 import { Navbar } from "@/components/ui/navbar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/providers/language-provider";
@@ -23,12 +32,15 @@ function CollectionPageContent() {
   const params = useParams();
   const router = useRouter();
   const { language } = useLanguage();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [collection, setCollection] = useState<Collection | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [videoError, setVideoError] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   const metalTypes = [
     { value: "gold", labelEn: "Gold", labelAr: "ذهب" },
@@ -70,6 +82,25 @@ function CollectionPageContent() {
 
     fetchData();
   }, [params.id, router]);
+
+  // Handle video auto-play
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && collection?.bannerVideo && !videoError) {
+      const playVideo = async () => {
+        try {
+          await video.play();
+        } catch (error) {
+          console.error("Video autoplay failed:", error);
+          // Autoplay might be blocked, that's fine
+        }
+      };
+
+      if (videoLoaded) {
+        playVideo();
+      }
+    }
+  }, [collection?.bannerVideo, videoError, videoLoaded]);
 
   const getCollectionName = (collection: Collection) => {
     return language === "ar" ? collection.nameAr : collection.nameEn;
@@ -125,8 +156,21 @@ function CollectionPageContent() {
     });
   };
 
+  const handleVideoError = () => {
+    console.error("Video failed to load");
+    setVideoError(true);
+  };
+
+  const handleVideoLoad = () => {
+    setVideoLoaded(true);
+  };
+
+  // Gallery images (limit to 2)
+  const galleryImages = collection?.galleryImages?.slice(0, 2) || [];
+
+  // All images for modal (video thumbnail + gallery images)
   const allImages = collection
-    ? [collection.bannerImage, ...collection.galleryImages].filter(Boolean)
+    ? [collection.thumbnailImage, ...galleryImages].filter(Boolean)
     : [];
 
   if (isLoading) {
@@ -203,19 +247,113 @@ function CollectionPageContent() {
             </FadeIn>
           </div>
 
-          {/* Collection Hero */}
-          <section className="relative">
+          {/* Collection Hero - Mobile */}
+          <section className="lg:hidden">
             <FadeIn>
-              <div className="aspect-video sm:aspect-[21/9] bg-gray-100 overflow-hidden relative group">
-                <Image
-                  src={collection.bannerImage || "/placeholder.svg"}
-                  alt={getCollectionName(collection)}
-                  fill
-                  className="object-cover"
-                  sizes="100vw"
-                  priority
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-40" />
+              {/* Mobile: Text above video */}
+              <div className="container-responsive py-8 text-center">
+                {collection.isFeatured && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="inline-flex items-center gap-2 bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium mb-4"
+                  >
+                    <Star className="h-4 w-4" />
+                    {language === "ar" ? "مجموعة مميزة" : "Featured Collection"}
+                  </motion.div>
+                )}
+
+                <motion.h1
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                  className="text-3xl sm:text-4xl font-playfair font-bold mb-4 text-gray-900"
+                >
+                  {getPageTitle(collection) || getCollectionName(collection)}
+                </motion.h1>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="flex items-center justify-center gap-4 text-sm text-gray-600 mb-6"
+                >
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>{formatDate(collection.releaseDate)}</span>
+                  </div>
+                  {products.length > 0 && (
+                    <>
+                      <span>•</span>
+                      <span>
+                        {language === "ar"
+                          ? `${products.length} منتج`
+                          : `${products.length} ${
+                              products.length === 1 ? "piece" : "pieces"
+                            }`}
+                      </span>
+                    </>
+                  )}
+                </motion.div>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="text-lg text-gray-600 max-w-2xl mx-auto"
+                >
+                  {getCollectionDescription(collection)}
+                </motion.p>
+              </div>
+
+              {/* Mobile: Video */}
+              <div className="relative aspect-video bg-gray-100 overflow-hidden group">
+                {collection.bannerVideo && !videoError ? (
+                  <>
+                    <video
+                      ref={videoRef}
+                      className="w-full h-full object-cover"
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      onError={handleVideoError}
+                      onLoadedData={handleVideoLoad}
+                      poster={collection.thumbnailImage}
+                    >
+                      <source src={collection.bannerVideo} type="video/mp4" />
+                      <source src={collection.bannerVideo} type="video/webm" />
+                      Your browser does not support the video tag.
+                    </video>
+
+                    {!videoLoaded && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                        <div className="animate-pulse flex items-center gap-2 text-gray-500">
+                          <Play className="h-6 w-6" />
+                          <span>Loading video...</span>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    {collection.thumbnailImage ? (
+                      <Image
+                        src={collection.thumbnailImage}
+                        alt={getCollectionName(collection)}
+                        fill
+                        className="object-cover"
+                        sizes="100vw"
+                      />
+                    ) : (
+                      <div className="text-center text-gray-500">
+                        <AlertCircle className="h-12 w-12 mx-auto mb-2" />
+                        <p>Video unavailable</p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {allImages.length > 1 && (
                   <button
@@ -225,51 +363,137 @@ function CollectionPageContent() {
                     <Expand className="h-5 w-5" />
                   </button>
                 )}
+              </div>
+            </FadeIn>
+          </section>
 
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white container-responsive">
-                    <motion.div
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
-                    >
-                      {collection.isFeatured && (
-                        <div className="inline-flex items-center gap-2 bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium mb-4">
-                          <Star className="h-4 w-4" />
-                          {language === "ar"
-                            ? "مجموعة مميزة"
-                            : "Featured Collection"}
-                        </div>
-                      )}
+          {/* Collection Hero - Desktop */}
+          <section className="hidden lg:block">
+            <FadeIn>
+              <div className="container-responsive py-12">
+                <div className="flex items-center gap-12">
+                  {/* Desktop: Video (70% width) */}
+                  <div className="flex-[0_0_70%] relative aspect-video bg-gray-100 rounded-lg overflow-hidden group">
+                    {collection.bannerVideo && !videoError ? (
+                      <>
+                        <video
+                          ref={videoRef}
+                          className="w-full h-full object-cover"
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          onError={handleVideoError}
+                          onLoadedData={handleVideoLoad}
+                          poster={collection.thumbnailImage}
+                        >
+                          <source
+                            src={collection.bannerVideo}
+                            type="video/mp4"
+                          />
+                          <source
+                            src={collection.bannerVideo}
+                            type="video/webm"
+                          />
+                          Your browser does not support the video tag.
+                        </video>
 
-                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-playfair font-bold mb-4 text-shadow">
-                        {getPageTitle(collection) ||
-                          getCollectionName(collection)}
-                      </h1>
-
-                      <div className="flex items-center justify-center gap-4 text-sm sm:text-base mb-6">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>{formatDate(collection.releaseDate)}</span>
-                        </div>
-                        {products.length > 0 && (
-                          <>
-                            <span>•</span>
-                            <span>
-                              {language === "ar"
-                                ? `${products.length} منتج`
-                                : `${products.length} ${
-                                    products.length === 1 ? "piece" : "pieces"
-                                  }`}
-                            </span>
-                          </>
+                        {!videoLoaded && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                            <div className="animate-pulse flex items-center gap-2 text-gray-500">
+                              <Play className="h-8 w-8" />
+                              <span className="text-lg">Loading video...</span>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                        {collection.thumbnailImage ? (
+                          <Image
+                            src={collection.thumbnailImage}
+                            alt={getCollectionName(collection)}
+                            fill
+                            className="object-cover"
+                            sizes="70vw"
+                          />
+                        ) : (
+                          <div className="text-center text-gray-500">
+                            <AlertCircle className="h-16 w-16 mx-auto mb-4" />
+                            <p className="text-lg">Video unavailable</p>
+                          </div>
                         )}
                       </div>
+                    )}
 
-                      <p className="text-lg sm:text-xl max-w-3xl mx-auto text-shadow">
-                        {getCollectionDescription(collection)}
-                      </p>
+                    {allImages.length > 1 && (
+                      <button
+                        onClick={() => setIsGalleryOpen(true)}
+                        className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Expand className="h-5 w-5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Desktop: Text content (30% width) */}
+                  <div className="flex-1 space-y-6">
+                    {collection.isFeatured && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="inline-flex items-center gap-2 bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium"
+                      >
+                        <Star className="h-4 w-4" />
+                        {language === "ar"
+                          ? "مجموعة مميزة"
+                          : "Featured Collection"}
+                      </motion.div>
+                    )}
+
+                    <motion.h1
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.8, delay: 0.1 }}
+                      className="text-4xl xl:text-5xl font-playfair font-bold text-gray-900 leading-tight"
+                    >
+                      {getPageTitle(collection) ||
+                        getCollectionName(collection)}
+                    </motion.h1>
+
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      className="flex items-center gap-4 text-sm text-gray-600"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>{formatDate(collection.releaseDate)}</span>
+                      </div>
+                      {products.length > 0 && (
+                        <>
+                          <span>•</span>
+                          <span>
+                            {language === "ar"
+                              ? `${products.length} منتج`
+                              : `${products.length} ${
+                                  products.length === 1 ? "piece" : "pieces"
+                                }`}
+                          </span>
+                        </>
+                      )}
                     </motion.div>
+
+                    <motion.p
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.3 }}
+                      className="text-lg text-gray-600 leading-relaxed"
+                    >
+                      {getCollectionDescription(collection)}
+                    </motion.p>
                   </div>
                 </div>
               </div>
@@ -293,8 +517,8 @@ function CollectionPageContent() {
               </section>
             )}
 
-          {/* Gallery Images */}
-          {collection.galleryImages.length > 0 && (
+          {/* Gallery Images - 2 Wide Images */}
+          {galleryImages.length > 0 && (
             <section className="container-responsive spacing-section">
               <FadeIn>
                 <h2 className="text-2xl sm:text-3xl font-playfair font-bold text-gray-900 mb-8 text-center">
@@ -302,15 +526,15 @@ function CollectionPageContent() {
                 </h2>
               </FadeIn>
 
-              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {collection.galleryImages.map((image, index) => (
+              <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {galleryImages.map((image, index) => (
                   <StaggerItem key={index}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       transition={{ duration: 0.3 }}
-                      className="aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer group"
+                      className="aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden cursor-pointer group"
                       onClick={() => {
-                        setSelectedImageIndex(index + 1); // +1 because banner is first
+                        setSelectedImageIndex(index + 1); // +1 because thumbnail is first
                         setIsGalleryOpen(true);
                       }}
                     >
@@ -319,15 +543,30 @@ function CollectionPageContent() {
                         alt={`${getCollectionName(collection)} gallery ${
                           index + 1
                         }`}
-                        width={400}
-                        height={400}
+                        width={600}
+                        height={450}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
                       />
                     </motion.div>
                   </StaggerItem>
                 ))}
               </StaggerContainer>
+
+              {/* Show message if more than 2 images exist but we're only showing 2 */}
+              {collection.galleryImages.length > 2 && (
+                <>
+                  {/* <FadeIn> */}
+                  {/* <div className="text-center mt-6">
+                    <p className="text-sm text-gray-500">
+                      {language === "ar"
+                        ? `عرض ${galleryImages.length} من أصل ${collection.galleryImages.length} صور`
+                        : `Showing ${galleryImages.length} of ${collection.galleryImages.length} images`}
+                    </p>
+                  </div> */}
+                  {/* </FadeIn> */}
+                </>
+              )}
             </section>
           )}
 
