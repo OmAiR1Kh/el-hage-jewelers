@@ -146,42 +146,6 @@ export const CampaignSchema = z.object({
   updatedAt: z.string().default(new Date().toISOString()),
 });
 
-// export const CollectionSchema = z.object({
-//   _id: z.string().min(1),
-//   nameAr: z.string().min(1).default("مجموعة بدون اسم"),
-//   nameEn: z.string().min(1).default("Untitled Collection"),
-//   descriptionAr: z.string().min(1).default("وصف المجموعة"),
-//   descriptionEn: z
-//     .string()
-//     .min(1)
-//     .default("A beautiful collection of fine jewelry"),
-//   bannerImage: z
-//     .string()
-//     .url()
-//     .default("/placeholder.svg?height=600&width=1200"),
-//   thumbnailImage: z
-//     .string()
-//     .url()
-//     .default("/placeholder.svg?height=400&width=400"),
-//   galleryImages: z.array(z.string().url()).default([]),
-//   pageContent: z
-//     .object({
-//       titleAr: z.string().optional(),
-//       titleEn: z.string().optional(),
-//       contentAr: z.string().optional(),
-//       contentEn: z.string().optional(),
-//       metaDescriptionAr: z.string().optional(),
-//       metaDescriptionEn: z.string().optional(),
-//       keywords: z.array(z.string()).default([]),
-//     })
-//     .optional(),
-//   isActive: z.boolean().default(true),
-//   isFeatured: z.boolean().default(false),
-//   releaseDate: z.string().default(new Date().toISOString()),
-//   createdAt: z.string().default(new Date().toISOString()),
-//   updatedAt: z.string().default(new Date().toISOString()),
-// });
-
 export const CollectionSchema = z.object({
   _id: z.string().min(1),
   nameAr: z.string().min(1).default("مجموعة بدون اسم"),
