@@ -1041,11 +1041,6 @@ function ProductsPageContent() {
                         ? `عرض ${filteredAndSortedProducts.length} منتج`
                         : `Showing ${filteredAndSortedProducts.length} products`}
                     </p>
-                    <p className="text-sm text-gray-500">
-                      {language === "ar"
-                        ? "مرتبة حسب: المنتجات المميزة أولاً، ثم حسب السعر الأعلى، والمنتجات بدون سعر في النهاية"
-                        : "Sorted by: Featured first, then highest filter price, products without price at end"}
-                    </p>
                   </div>
                 </FadeIn>
 
