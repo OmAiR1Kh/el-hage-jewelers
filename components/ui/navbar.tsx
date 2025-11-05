@@ -106,11 +106,11 @@ export function Navbar() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="hidden lg:flex items-center space-x-8 xl:space-x-12"
+              className="hidden lg:flex items-center justify-between space-x-8 xl:space-x-12"
             >
               {/* Collections Dropdown */}
               <div
-                className="relative group"
+                className="relative group text-center"
                 onMouseEnter={() => {
                   setIsCategoriesOpen(false);
                   setIsCollectionsOpen(true);
@@ -133,7 +133,7 @@ export function Navbar() {
 
               {/* Categories Dropdown */}
               <div
-                className="relative group"
+                className="relative group text-center"
                 onMouseEnter={() => {
                   setIsCollectionsOpen(false);
                   setIsCategoriesOpen(true);
@@ -142,7 +142,9 @@ export function Navbar() {
               >
                 <Link
                   href="/categories"
-                  className="flex items-center space-x-1 text-gray-900 hover:text-gray-600 font-medium transition-colors focus-visible"
+                  className={`flex items-center space-x-1 text-gray-900 hover:text-gray-600 font-medium transition-colors focus-visible ${
+                    language == "ar" && "md:mr-4"
+                  }`}
                 >
                   <span>{t("nav.categories")}</span>
                   <motion.div

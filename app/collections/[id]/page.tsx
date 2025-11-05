@@ -279,10 +279,10 @@ function CollectionPageContent() {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   className="flex items-center justify-center gap-4 text-sm text-gray-600 mb-6"
                 >
-                  <div className="flex items-center gap-2">
+                  {/*<div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     <span>{formatDate(collection.releaseDate)}</span>
-                  </div>
+                  </div> */}
                   {products.length > 0 && (
                     <>
                       <span>•</span>
@@ -301,10 +301,11 @@ function CollectionPageContent() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  className="text-lg text-gray-600 max-w-2xl mx-auto"
-                >
-                  {getCollectionDescription(collection)}
-                </motion.p>
+                  className="text-lg text-gray-600 max-w-2xl mx-auto whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: getCollectionDescription(collection),
+                  }}
+                />
               </div>
 
               {/* Mobile: Video */}
@@ -468,10 +469,10 @@ function CollectionPageContent() {
                       transition={{ duration: 0.6, delay: 0.2 }}
                       className="flex items-center gap-4 text-sm text-gray-600"
                     >
-                      <div className="flex items-center gap-2">
+                      {/* <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
                         <span>{formatDate(collection.releaseDate)}</span>
-                      </div>
+                      </div> */}
                       {products.length > 0 && (
                         <>
                           <span>•</span>
@@ -485,15 +486,15 @@ function CollectionPageContent() {
                         </>
                       )}
                     </motion.div>
-
                     <motion.p
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
-                      className="text-lg text-gray-600 leading-relaxed"
-                    >
-                      {getCollectionDescription(collection)}
-                    </motion.p>
+                      className="text-lg text-gray-600 leading-relaxed whitespace-pre-line"
+                      dangerouslySetInnerHTML={{
+                        __html: getCollectionDescription(collection),
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -508,9 +509,18 @@ function CollectionPageContent() {
                 <FadeIn>
                   <div className="max-w-4xl mx-auto">
                     <div className="prose prose-lg text-gray-600 max-w-none">
-                      <p className="leading-relaxed text-center">
-                        {getPageContent(collection)}
-                      </p>
+                      {getPageContent(collection) && (
+                        <p
+                          className="leading-relaxed text-center"
+                          dangerouslySetInnerHTML={{
+                            // @ts-ignore
+                            __html: getPageContent(collection).replace(
+                              /\\r\\n|\\n|\\r|\r\n|\n/g,
+                              "<br />"
+                            ),
+                          }}
+                        ></p>
+                      )}
                     </div>
                   </div>
                 </FadeIn>
