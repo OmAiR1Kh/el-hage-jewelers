@@ -100,7 +100,7 @@ export function Footer() {
         title: "Quick Links",
         links: [
           { name: "Home", href: "/" },
-          { name: "About Us", href: "/about" },
+          { name: "Our Legacy", href: "/about" },
           { name: "Collections", href: "/collections" },
           { name: "Products", href: "/products" },
           { name: "Contact", href: "/contact" },
@@ -149,7 +149,7 @@ export function Footer() {
         title: "روابط سريعة",
         links: [
           { name: "الرئيسية", href: "/" },
-          { name: "من نحن", href: "/about" },
+          { name: "إرثنا", href: "/about" },
           { name: "المجموعات", href: "/collections" },
           { name: "المنتجات", href: "/products" },
           { name: "اتصل بنا", href: "/contact" },
