@@ -143,7 +143,7 @@ export function Navbar() {
                 <Link
                   href="/categories"
                   className={`flex items-center space-x-1 text-gray-900 hover:text-gray-600 font-medium transition-colors focus-visible ${
-                    language == "ar" && "md:mr-4"
+                    language == "ar" && "md:mr-6"
                   }`}
                 >
                   <span>{t("nav.categories")}</span>
