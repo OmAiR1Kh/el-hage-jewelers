@@ -1,6 +1,6 @@
 // app/sitemap.ts
 import { MetadataRoute } from "next";
-import { apiService } from "@/lib/api"; // Update this path to match your api.ts location
+import { apiService } from "@/lib/api";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://elhagejewelers.com";
@@ -51,6 +51,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "daily",
         priority: 0.9,
       },
+      {
+        url: `${baseUrl}/privacy`,
+        lastModified: new Date(),
+        changeFrequency: "yearly",
+        priority: 0.5,
+      },
+      {
+        url: `${baseUrl}/terms`,
+        lastModified: new Date(),
+        changeFrequency: "yearly",
+        priority: 0.5,
+      },
     ];
 
     // Dynamic routes for categories (only active ones)
@@ -84,7 +96,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
 
     console.log(
-      `Generated sitemap with ${staticRoutes.length} static routes, ${categoryRoutes.length} categories, ${collectionRoutes.length} collections, and ${productRoutes.length} products`
+      `Generated sitemap with ${staticRoutes.length} static routes, ${categoryRoutes.length} categories, ${collectionRoutes.length} collections, and ${productRoutes.length} products`,
     );
 
     return [
