@@ -345,32 +345,27 @@
 //         </section>
 
 //         {/* ── Maison Philosophy ── */}
-//         <section className="py-10 bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+//         <section className="py-16 bg-black text-white border-t border-gray-800">
 //           <div className="container-responsive">
 //             <FadeIn>
-//               <div className="text-center mb-8">
-//                 <h2 className="text-xl sm:text-2xl md:text-3xl font-playfair font-bold">
+//               <div className="text-center mb-12">
+//                 <h2 className="text-3xl md:text-4xl font-playfair font-bold text-white mb-2">
 //                   {t("about.values.title")}
 //                 </h2>
+//                 <div className="h-1 w-16 bg-gray-700 mx-auto"></div>
 //               </div>
 //             </FadeIn>
 
-//             <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
+//             <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
 //               {values.map((value, index) => (
 //                 <StaggerItem key={index}>
 //                   <motion.div
-//                     whileHover={{ y: -5, scale: 1.01 }}
-//                     transition={{ duration: 0.25 }}
-//                     className="relative"
+//                     whileHover={{ y: -4 }}
+//                     transition={{ duration: 0.3 }}
+//                     className="relative group"
 //                   >
-//                     <div className="absolute inset-0 bg-white/5 rounded-xl border border-white/15" />
-//                     <div className="relative p-6 text-center space-y-3">
-//                       <div
-//                         className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${value.gradient} shadow`}
-//                       >
-//                         <value.icon className="h-5 w-5 text-white" />
-//                       </div>
-//                       <h3 className="text-base font-playfair font-bold text-amber-300">
+//                     <div className="p-8 text-center space-y-4 border border-gray-800 rounded-lg hover:border-gray-700 transition-all duration-300">
+//                       <h3 className="text-xl font-playfair font-bold text-white">
 //                         {value.title}
 //                       </h3>
 //                       <p className="text-xs text-gray-400 leading-relaxed">
@@ -402,7 +397,7 @@
 //                     size="lg"
 //                     className="bg-gray-900 text-white hover:bg-gray-700 px-7 py-3 text-sm font-medium shadow-sm"
 //                   >
-//                     <Link href="/contact">
+//                     <Link href="https://wa.me/96171444454">
 //                       {t("about.experience.appointment")}
 //                     </Link>
 //                   </Button>
@@ -721,35 +716,26 @@ function AboutPageContent() {
                   >
                     {/* ── Text Square ── */}
                     <div className="w-full lg:w-[38%] aspect-square bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-center px-6 py-6 overflow-hidden">
-                      <div className="flex items-start gap-3 mb-4">
-                        <div
-                          className={`p-2 rounded-lg ${colors.iconBg} shrink-0 mt-0.5`}
-                        >
-                          <era.icon className={`h-4 w-4 ${colors.text}`} />
-                        </div>
-                        <div>
-                          {era.period && (
-                            <div
-                              className={`text-xs font-semibold ${colors.text} uppercase tracking-widest mb-1`}
-                            >
-                              {era.period}
-                            </div>
+                      <div className="mb-4">
+                        {era.period && (
+                          <div
+                            className={`text-xs font-semibold ${colors.text} uppercase tracking-widest mb-1`}
+                          >
+                            {era.period}
+                          </div>
+                        )}
+                        <h3 className="text-xl font-playfair font-bold text-gray-900 leading-tight">
+                          {era.isArtist ? era.title : era.subtitle || era.title}
+                        </h3>
+                        {!era.isArtist &&
+                          era.subtitle &&
+                          era.title !== era.subtitle && (
+                            <p className="text-xs text-gray-400 mt-1">
+                              {era.title}
+                            </p>
                           )}
-                          <h3 className="text-xl font-playfair font-bold text-gray-900 leading-tight">
-                            {era.isArtist
-                              ? era.title
-                              : era.subtitle || era.title}
-                          </h3>
-                          {!era.isArtist &&
-                            era.subtitle &&
-                            era.title !== era.subtitle && (
-                              <p className="text-xs text-gray-400 mt-1">
-                                {era.title}
-                              </p>
-                            )}
-                        </div>
                       </div>
-                      <div className="text-sm text-gray-500 leading-relaxed space-y-2 pl-9">
+                      <div className="text-sm text-gray-500 leading-relaxed space-y-2">
                         {era.content.split("\n\n").map((paragraph, pIndex) => (
                           <p key={pIndex}>{paragraph}</p>
                         ))}
