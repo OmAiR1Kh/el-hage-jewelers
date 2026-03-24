@@ -171,42 +171,6 @@ function AboutPageContent() {
             className="absolute bottom-20 right-10 w-32 h-32 bg-rose-400/20 rounded-full blur-xl"
           />
 
-          {/* <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-5 py-2 rounded-full text-amber-300 text-xs font-medium mb-5 border border-white/20"
-              >
-                <Crown className="h-3.5 w-3.5" />
-                {t("about.anniversary.title")}
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.4 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-playfair font-bold mb-5 leading-tight text-white"
-              >
-                {t("about.page.title")}
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto text-gray-300 font-light"
-              >
-                {t("about.page.subtitle")}
-              </motion.p>
-            </motion.div>
-          </div> */}
-
           {/* Scroll indicator */}
           <motion.div
             initial={{ opacity: 0 }}

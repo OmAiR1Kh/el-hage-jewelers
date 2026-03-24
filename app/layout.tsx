@@ -95,6 +95,11 @@ export const metadata: Metadata = {
       "ar-SA": "https://elhagejewelers.com/ar",
     },
   },
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 const organizationStructuredData = generateStructuredData("Organization", {});
