@@ -88,8 +88,7 @@ export function generateStructuredData(type: string, data: any) {
         foundingDate: "1953",
         address: {
           "@type": "PostalAddress",
-          streetAddress: "123 Luxury Avenue",
-          addressLocality: "Beirut",
+          addressLocality: "Tripoli",
           addressCountry: "Lebanon",
         },
         contactPoint: {

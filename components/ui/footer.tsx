@@ -47,12 +47,12 @@ export function Footer() {
   const locationData = {
     lebanon: {
       en: {
-        address: "Beirut Central District, Lebanon",
+        address: "Tripoli, Lebanon",
         phone: "+961 71 444 454",
         hours: "Mon-Fri: 9:00 AM - 3:00 PM",
       },
       ar: {
-        address: "بيروت، المنطقة التجارية المركزية، لبنان",
+        address: "طرابلس، لبنان",
         phone: "+961 71 444 454",
         hours: "الإثنين-السبت: 9:00 ص - 8:00 م",
       },
