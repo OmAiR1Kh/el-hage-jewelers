@@ -28,6 +28,7 @@ function CategoryPageContent() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("name");
   const [showFilters, setShowFilters] = useState(false);
+  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
 
   const metalTypes = [
     { value: "gold", labelEn: "Gold", labelAr: "ذهب" },
@@ -286,105 +287,191 @@ function CategoryPageContent() {
                     : "space-y-6"
                 }
               >
-                {sortedProducts.map((product) => (
-                  <StaggerItem key={product._id}>
-                    {viewMode === "grid" ? (
-                      <motion.div
-                        whileHover={{ y: -8 }}
-                        transition={{ duration: 0.3 }}
-                        className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100"
-                      >
-                        <Link
-                          href={`/products/${product._id}`}
-                          className="block"
+                {sortedProducts.map((product) => {
+                  const primaryImage = product.mainImg || "/placeholder.svg";
+                  const hoverImage = product.images?.[0] || primaryImage;
+                  const isHovered = hoveredProduct === product._id;
+
+                  return (
+                    <StaggerItem key={product._id}>
+                      {viewMode === "grid" ? (
+                        <motion.div
+                          whileHover={{ y: -8 }}
+                          transition={{ duration: 0.3 }}
+                          className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct(product._id)}
+                          onMouseLeave={() => setHoveredProduct(null)}
                         >
-                          <div className="aspect-square overflow-hidden">
-                            <motion.div
-                              whileHover={{ scale: 1.05 }}
-                              transition={{ duration: 0.5 }}
-                              className="w-full h-full"
-                            >
+                          <Link
+                            href={`/products/${product._id}`}
+                            className="block"
+                          >
+                            <div className="aspect-square overflow-hidden">
+                              <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                transition={{ duration: 0.5 }}
+                                className="w-full h-full relative"
+                              >
+                                {/* Primary Image */}
+                                <Image
+                                  src={primaryImage}
+                                  alt={getProductName(product)}
+                                  width={300}
+                                  height={300}
+                                  className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
+                                    isHovered ? "opacity-0" : "opacity-100"
+                                  }`}
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                />
+
+                                {/* Hover Image */}
+                                <Image
+                                  src={hoverImage}
+                                  alt={getProductName(product)}
+                                  width={300}
+                                  height={300}
+                                  className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
+                                    isHovered ? "opacity-100" : "opacity-0"
+                                  }`}
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                />
+                              </motion.div>
+                            </div>
+
+                            <div className="p-4">
+                              <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors line-clamp-2">
+                                {getProductName(product)}
+                              </h3>
+
+                              {/* Description with smooth transition */}
+                              <div className="overflow-hidden">
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0, y: -10 }}
+                                  animate={{
+                                    height: isHovered ? "auto" : 0,
+                                    opacity: isHovered ? 1 : 0,
+                                    y: isHovered ? 0 : -10,
+                                  }}
+                                  transition={{
+                                    duration: 0.5,
+                                    ease: [0.25, 0.1, 0.25, 1],
+                                    opacity: {
+                                      duration: 0.4,
+                                      delay: isHovered ? 0.1 : 0,
+                                    },
+                                    y: {
+                                      duration: 0.4,
+                                      delay: isHovered ? 0.1 : 0,
+                                    },
+                                  }}
+                                  className="text-sm text-gray-600 mb-3 line-clamp-2"
+                                >
+                                  {getProductDescription(product)}
+                                </motion.div>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                                  {getMetalTypeName(product.metalType)}
+                                </span>
+
+                                {product.showPrice && (
+                                  <span className="font-bold text-gray-900">
+                                    ${product.price.toLocaleString()}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          whileHover={{ x: 8 }}
+                          transition={{ duration: 0.3 }}
+                          className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100 cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct(product._id)}
+                          onMouseLeave={() => setHoveredProduct(null)}
+                        >
+                          <Link
+                            href={`/products/${product._id}`}
+                            className="flex items-center"
+                          >
+                            <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden relative">
+                              {/* Primary Image */}
                               <Image
-                                src={product.mainImg || "/placeholder.svg"}
+                                src={primaryImage}
                                 alt={getProductName(product)}
-                                width={300}
-                                height={300}
-                                className="w-full h-full object-cover"
-                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                width={128}
+                                height={128}
+                                className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
+                                  isHovered ? "opacity-0" : "opacity-100"
+                                }`}
+                                sizes="128px"
                               />
-                            </motion.div>
-                          </div>
 
-                          <div className="p-4">
-                            <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors line-clamp-2">
-                              {getProductName(product)}
-                            </h3>
-
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                              {getProductDescription(product)}
-                            </p>
-
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                                {getMetalTypeName(product.metalType)}
-                              </span>
-
-                              {product.showPrice && (
-                                <span className="font-bold text-gray-900">
-                                  ${product.price.toLocaleString()}
-                                </span>
-                              )}
+                              {/* Hover Image */}
+                              <Image
+                                src={hoverImage}
+                                alt={getProductName(product)}
+                                width={128}
+                                height={128}
+                                className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
+                                  isHovered ? "opacity-100" : "opacity-0"
+                                }`}
+                                sizes="128px"
+                              />
                             </div>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        whileHover={{ x: 8 }}
-                        transition={{ duration: 0.3 }}
-                        className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100"
-                      >
-                        <Link
-                          href={`/products/${product._id}`}
-                          className="flex items-center"
-                        >
-                          <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden">
-                            <Image
-                              src={product.mainImg || "/placeholder.svg"}
-                              alt={getProductName(product)}
-                              width={128}
-                              height={128}
-                              className="w-full h-full object-cover"
-                              sizes="128px"
-                            />
-                          </div>
 
-                          <div className="flex-1 p-4 sm:p-6">
-                            <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors">
-                              {getProductName(product)}
-                            </h3>
+                            <div className="flex-1 p-4 sm:p-6">
+                              <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors">
+                                {getProductName(product)}
+                              </h3>
 
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                              {getProductDescription(product)}
-                            </p>
+                              {/* Description with smooth transition */}
+                              <div className="overflow-hidden">
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0, y: -10 }}
+                                  animate={{
+                                    height: isHovered ? "auto" : 0,
+                                    opacity: isHovered ? 1 : 0,
+                                    y: isHovered ? 0 : -10,
+                                  }}
+                                  transition={{
+                                    duration: 0.5,
+                                    ease: [0.25, 0.1, 0.25, 1],
+                                    opacity: {
+                                      duration: 0.4,
+                                      delay: isHovered ? 0.1 : 0,
+                                    },
+                                    y: {
+                                      duration: 0.4,
+                                      delay: isHovered ? 0.1 : 0,
+                                    },
+                                  }}
+                                  className="text-sm text-gray-600 mb-3 line-clamp-2"
+                                >
+                                  {getProductDescription(product)}
+                                </motion.div>
+                              </div>
 
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                                {getMetalTypeName(product.metalType)}
-                              </span>
-
-                              {product.showPrice && (
-                                <span className="font-bold text-gray-900">
-                                  ${product.price.toLocaleString()}
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                                  {getMetalTypeName(product.metalType)}
                                 </span>
-                              )}
+
+                                {product.showPrice && (
+                                  <span className="font-bold text-gray-900">
+                                    ${product.price.toLocaleString()}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    )}
-                  </StaggerItem>
-                ))}
+                          </Link>
+                        </motion.div>
+                      )}
+                    </StaggerItem>
+                  );
+                })}
               </StaggerContainer>
             </section>
           )}

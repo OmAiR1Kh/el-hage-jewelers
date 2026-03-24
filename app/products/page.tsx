@@ -454,6 +454,7 @@ function ProductsPageContent() {
     search: "",
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
 
   const metalTypes = [
     { value: "gold", labelEn: "Gold", labelAr: "ذهب" },
@@ -527,13 +528,13 @@ function ProductsPageContent() {
         apiService.getAllProducts().catch((err) => {
           console.error("Products API error:", err);
           throw new Error(
-            `Failed to fetch products: ${err.message || "Unknown error"}`
+            `Failed to fetch products: ${err.message || "Unknown error"}`,
           );
         }),
         apiService.getActiveCategories().catch((err) => {
           console.error("Categories API error:", err);
           throw new Error(
-            `Failed to fetch categories: ${err.message || "Unknown error"}`
+            `Failed to fetch categories: ${err.message || "Unknown error"}`,
           );
         }),
       ]);
@@ -556,7 +557,7 @@ function ProductsPageContent() {
         console.warn(
           `Filtered out ${
             productsResponse.products.length - validProducts.length
-          } invalid products`
+          } invalid products`,
         );
       }
 
@@ -567,7 +568,7 @@ function ProductsPageContent() {
         console.warn(
           `Filtered out ${
             categoriesResponse.length - validCategories.length
-          } invalid categories`
+          } invalid categories`,
         );
       }
 
@@ -609,7 +610,7 @@ function ProductsPageContent() {
         setRetryCount(attempt + 1);
         await retryWithDelay(
           () => fetchData(attempt + 1),
-          RETRY_DELAY * Math.pow(2, attempt) // Exponential backoff
+          RETRY_DELAY * Math.pow(2, attempt), // Exponential backoff
         );
       }
     } finally {
@@ -1045,93 +1046,146 @@ function ProductsPageContent() {
                 </FadeIn>
 
                 <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredAndSortedProducts.map((product) => (
-                    <StaggerItem key={product._id}>
-                      <motion.div
-                        whileHover={{ y: -8 }}
-                        transition={{ duration: 0.3 }}
-                        className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group relative"
-                      >
-                        {/* Featured Badge */}
-                        {product.featured && (
-                          <div className="absolute top-3 right-3 z-10">
-                            <div className="bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-medium">
-                              <Star className="h-3 w-3 fill-current" />
-                              {language === "ar" ? "مميز" : "Featured"}
-                            </div>
-                          </div>
-                        )}
+                  {filteredAndSortedProducts.map((product) => {
+                    const primaryImage = product.mainImg || "/placeholder.svg";
+                    const hoverImage = product.images?.[0] || primaryImage;
+                    const isHovered = hoveredProduct === product._id;
 
-                        <Link
-                          href={`/products/${product._id}`}
-                          className="block"
+                    return (
+                      <StaggerItem key={product._id}>
+                        <motion.div
+                          whileHover={{ y: -8 }}
+                          transition={{ duration: 0.3 }}
+                          className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group relative cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct(product._id)}
+                          onMouseLeave={() => setHoveredProduct(null)}
                         >
-                          <div className="aspect-square overflow-hidden">
-                            <motion.div
-                              whileHover={{ scale: 1.05 }}
-                              transition={{ duration: 0.5 }}
-                              className="w-full h-full"
-                            >
-                              <Image
-                                src={product.mainImg || "/placeholder.svg"}
-                                alt={getProductName(product)}
-                                width={400}
-                                height={400}
-                                className="w-full h-full object-cover"
-                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                                onError={(e) => {
-                                  console.error(
-                                    "Image load error for product:",
-                                    product._id
-                                  );
-                                  e.currentTarget.src = "/placeholder.svg";
-                                }}
-                              />
-                            </motion.div>
-                          </div>
+                          {/* Featured Badge */}
+                          {product.featured && (
+                            <div className="absolute top-3 right-3 z-10">
+                              <div className="bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-medium">
+                                <Star className="h-3 w-3 fill-current" />
+                                {language === "ar" ? "مميز" : "Featured"}
+                              </div>
+                            </div>
+                          )}
 
-                          <div className="p-4 sm:p-6">
-                            <div className="mb-2">
-                              <span className="text-xs text-gray-500 uppercase tracking-wide">
-                                {getCategoryName(product.categoryId)}
-                              </span>
+                          <Link
+                            href={`/products/${product._id}`}
+                            className="block"
+                          >
+                            <div className="aspect-square overflow-hidden">
+                              <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                transition={{ duration: 0.5 }}
+                                className="w-full h-full relative"
+                              >
+                                {/* Primary Image */}
+                                <Image
+                                  src={primaryImage}
+                                  alt={getProductName(product)}
+                                  width={400}
+                                  height={400}
+                                  className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
+                                    isHovered ? "opacity-0" : "opacity-100"
+                                  }`}
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                  onError={(e) => {
+                                    console.error(
+                                      "Image load error for product:",
+                                      product._id,
+                                    );
+                                    e.currentTarget.src = "/placeholder.svg";
+                                  }}
+                                />
+
+                                {/* Hover Image */}
+                                <Image
+                                  src={hoverImage}
+                                  alt={getProductName(product)}
+                                  width={400}
+                                  height={400}
+                                  className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
+                                    isHovered ? "opacity-100" : "opacity-0"
+                                  }`}
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                  onError={(e) => {
+                                    console.error(
+                                      "Image load error for product:",
+                                      product._id,
+                                    );
+                                    e.currentTarget.src = "/placeholder.svg";
+                                  }}
+                                />
+                              </motion.div>
                             </div>
 
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors line-clamp-2">
-                              {getProductName(product)}
-                            </h3>
-
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                              {getProductDescription(product)}
-                            </p>
-
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                                  {getMetalTypeName(product.metalType)}
+                            <div className="p-4 sm:p-6">
+                              <div className="mb-2">
+                                <span className="text-xs text-gray-500 uppercase tracking-wide">
+                                  {getCategoryName(product.categoryId)}
                                 </span>
-                                {product.skuPrice && (
-                                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                                    {product.skuPrice}
-                                  </span>
-                                )}
                               </div>
 
-                              {product.showPrice &&
-                                product.price &&
-                                typeof product.price === "number" && (
-                                  <div className="text-right">
-                                    <span className="text-lg font-bold text-gray-900">
-                                      ${product.price.toLocaleString()}
+                              <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors line-clamp-2">
+                                {getProductName(product)}
+                              </h3>
+
+                              {/* Description with smooth transition */}
+                              <div className="overflow-hidden">
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0, y: -10 }}
+                                  animate={{
+                                    height: isHovered ? "auto" : 0,
+                                    opacity: isHovered ? 1 : 0,
+                                    y: isHovered ? 0 : -10,
+                                  }}
+                                  transition={{
+                                    duration: 0.5,
+                                    ease: [0.25, 0.1, 0.25, 1],
+                                    opacity: {
+                                      duration: 0.4,
+                                      delay: isHovered ? 0.1 : 0,
+                                    },
+                                    y: {
+                                      duration: 0.4,
+                                      delay: isHovered ? 0.1 : 0,
+                                    },
+                                  }}
+                                  className="text-sm text-gray-600 mb-3 line-clamp-2"
+                                >
+                                  {getProductDescription(product)}
+                                </motion.div>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                                    {getMetalTypeName(product.metalType)}
+                                  </span>
+                                  {product.skuPrice && (
+                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                                      {product.skuPrice}
                                     </span>
-                                  </div>
-                                )}
+                                  )}
+                                </div>
+
+                                {product.showPrice &&
+                                  product.price &&
+                                  typeof product.price === "number" && (
+                                    <div className="text-right">
+                                      <span className="text-lg font-bold text-gray-900">
+                                        ${product.price.toLocaleString()}
+                                      </span>
+                                    </div>
+                                  )}
+                              </div>
                             </div>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    </StaggerItem>
-                  ))}
+                          </Link>
+                        </motion.div>
+                      </StaggerItem>
+                    );
+                  })}
                 </StaggerContainer>
               </>
             )}

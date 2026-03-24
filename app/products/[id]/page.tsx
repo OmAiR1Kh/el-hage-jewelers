@@ -33,6 +33,7 @@ function ProductPageContent() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [skuCopySuccess, setSkuCopySuccess] = useState(false);
+  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
 
   const metalTypes = [
     { value: "gold", labelEn: "Gold", labelAr: "ذهب" },
@@ -72,13 +73,13 @@ function ProductPageContent() {
           if (typeof productData.categoryId === "string") {
             console.log(
               "Fetching related products for category:",
-              productData.categoryId
+              productData.categoryId,
             );
             const related = await apiService.getProductsByCategory(
-              productData.categoryId
+              productData.categoryId,
             );
             setRelatedProducts(
-              related.filter((p) => p._id !== productData._id).slice(0, 5)
+              related.filter((p) => p._id !== productData._id).slice(0, 5),
             );
           } else if (
             productData.categoryId &&
@@ -86,13 +87,13 @@ function ProductPageContent() {
           ) {
             console.log(
               "Fetching related products for category object:",
-              productData.categoryId._id
+              productData.categoryId._id,
             );
             const related = await apiService.getProductsByCategory(
-              productData.categoryId._id
+              productData.categoryId._id,
             );
             setRelatedProducts(
-              related.filter((p) => p._id !== productData._id).slice(0, 5)
+              related.filter((p) => p._id !== productData._id).slice(0, 5),
             );
           }
         } catch (relatedError) {
@@ -505,8 +506,8 @@ function ProductPageContent() {
                                 ? "متوفر"
                                 : "In Stock"
                               : language === "ar"
-                              ? "غير متوفر"
-                              : "Out of Stock"}
+                                ? "غير متوفر"
+                                : "Out of Stock"}
                           </span>
                         </div>
                       )}
@@ -532,77 +533,134 @@ function ProductPageContent() {
 
                 <div className="relative">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-10">
-                    {relatedProducts.map((relatedProduct, index) => (
-                      <motion.div
-                        key={relatedProduct._id}
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: index * 0.1 }}
-                        className="group"
-                      >
+                    {relatedProducts.map((relatedProduct, index) => {
+                      const primaryImage =
+                        relatedProduct.mainImg || "/placeholder.svg";
+                      const hoverImage =
+                        relatedProduct.images?.[0] || primaryImage;
+                      const isHovered = hoveredProduct === relatedProduct._id;
+
+                      return (
                         <motion.div
-                          whileHover={{ y: -4 }}
-                          transition={{ duration: 0.4 }}
-                          className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+                          key={relatedProduct._id}
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6, delay: index * 0.1 }}
+                          className="group cursor-pointer"
+                          onMouseEnter={() =>
+                            setHoveredProduct(relatedProduct._id)
+                          }
+                          onMouseLeave={() => setHoveredProduct(null)}
                         >
-                          <a
-                            href={`/products/${relatedProduct._id}`}
-                            className="block"
+                          <motion.div
+                            whileHover={{ y: -4 }}
+                            transition={{ duration: 0.4 }}
+                            className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
                           >
-                            <div className="aspect-square overflow-hidden relative">
-                              <Image
-                                src={
-                                  relatedProduct.mainImg || "/placeholder.svg"
-                                }
-                                alt={getProductName(relatedProduct)}
-                                width={300}
-                                height={300}
-                                className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700"
-                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                              />
-                              {relatedProduct.featured && (
-                                <div className="absolute top-3 right-3 z-10">
-                                  <div className="bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-medium">
-                                    <Star className="h-3 w-3 fill-current" />
-                                    {language === "ar" ? "مميز" : "Featured"}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                            <div className="p-6 space-y-4">
-                              <h3 className="font-light text-gray-900 text-lg group-hover:text-gray-600 transition-colors line-clamp-2 tracking-wide min-h-[3.5rem]">
-                                {getProductName(relatedProduct)}
-                              </h3>
+                            <a
+                              href={`/products/${relatedProduct._id}`}
+                              className="block"
+                            >
+                              <div className="aspect-square overflow-hidden relative">
+                                {/* Primary Image */}
+                                <Image
+                                  src={primaryImage}
+                                  alt={getProductName(relatedProduct)}
+                                  width={300}
+                                  height={300}
+                                  className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 group-hover:scale-[1.05] ${
+                                    isHovered ? "opacity-0" : "opacity-100"
+                                  }`}
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                />
 
-                              <div className="space-y-3">
-                                {/* SKU and Metal Type */}
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                                    {getMetalTypeName(relatedProduct.metalType)}
-                                  </span>
-                                  {relatedProduct.skuPrice && (
-                                    <code className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">
-                                      {relatedProduct.skuPrice}
-                                    </code>
-                                  )}
-                                </div>
+                                {/* Hover Image */}
+                                <Image
+                                  src={hoverImage}
+                                  alt={getProductName(relatedProduct)}
+                                  width={300}
+                                  height={300}
+                                  className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 group-hover:scale-[1.05] ${
+                                    isHovered ? "opacity-100" : "opacity-0"
+                                  }`}
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                />
 
-                                {/* Price */}
-                                {relatedProduct.showPrice &&
-                                  relatedProduct.price &&
-                                  typeof relatedProduct.price === "number" && (
-                                    <div className="flex items-center justify-between">
-                                      <p className="text-xl font-light text-gray-900 tracking-wide">
-                                        ${relatedProduct.price.toLocaleString()}
-                                      </p>
+                                {relatedProduct.featured && (
+                                  <div className="absolute top-3 right-3 z-10">
+                                    <div className="bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-medium">
+                                      <Star className="h-3 w-3 fill-current" />
+                                      {language === "ar" ? "مميز" : "Featured"}
                                     </div>
-                                  )}
+                                  </div>
+                                )}
                               </div>
-                            </div>
-                          </a>
+                              <div className="p-6 space-y-4">
+                                <h3 className="font-light text-gray-900 text-lg group-hover:text-gray-600 transition-colors line-clamp-2 tracking-wide min-h-[3.5rem]">
+                                  {getProductName(relatedProduct)}
+                                </h3>
+
+                                {/* Description with smooth transition */}
+                                <div className="overflow-hidden">
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0, y: -10 }}
+                                    animate={{
+                                      height: isHovered ? "auto" : 0,
+                                      opacity: isHovered ? 1 : 0,
+                                      y: isHovered ? 0 : -10,
+                                    }}
+                                    transition={{
+                                      duration: 0.5,
+                                      ease: [0.25, 0.1, 0.25, 1],
+                                      opacity: {
+                                        duration: 0.4,
+                                        delay: isHovered ? 0.1 : 0,
+                                      },
+                                      y: {
+                                        duration: 0.4,
+                                        delay: isHovered ? 0.1 : 0,
+                                      },
+                                    }}
+                                    className="text-sm text-gray-600 line-clamp-2"
+                                  >
+                                    {getProductDescription(relatedProduct)}
+                                  </motion.div>
+                                </div>
+
+                                <div className="space-y-3">
+                                  {/* SKU and Metal Type */}
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                                      {getMetalTypeName(
+                                        relatedProduct.metalType,
+                                      )}
+                                    </span>
+                                    {relatedProduct.skuPrice && (
+                                      <code className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-mono">
+                                        {relatedProduct.skuPrice}
+                                      </code>
+                                    )}
+                                  </div>
+
+                                  {/* Price */}
+                                  {relatedProduct.showPrice &&
+                                    relatedProduct.price &&
+                                    typeof relatedProduct.price ===
+                                      "number" && (
+                                      <div className="flex items-center justify-between">
+                                        <p className="text-xl font-light text-gray-900 tracking-wide">
+                                          $
+                                          {relatedProduct.price.toLocaleString()}
+                                        </p>
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+                            </a>
+                          </motion.div>
                         </motion.div>
-                      </motion.div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   {/* Show all products link */}
