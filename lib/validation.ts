@@ -49,7 +49,7 @@ export const HomeContentSchema = z.object({
       contentEn: z
         .string()
         .default(
-          "El Hage Jewelers has been crafting exquisite jewelry since 1953"
+          "El Hage Jewelers has been crafting exquisite jewelry since 1953",
         ),
       image: z.string().url().optional(),
     })
@@ -61,7 +61,7 @@ export const HomeContentSchema = z.object({
       titleAr: z.string().default("فيديو"),
       titleEn: z.string().default("Video"),
       videoUrl: z.string().url().optional(),
-      videoThumbnail: z.string().url().optional(),
+      thumbnailImage: z.string().url().optional(),
     })
     .optional(),
 
@@ -94,7 +94,7 @@ export const HomeContentSchema = z.object({
         }),
         displayOrder: z.number(),
         _id: z.string(),
-      })
+      }),
     )
     .default([]),
 

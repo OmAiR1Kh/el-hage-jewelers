@@ -37,7 +37,7 @@ export interface HomeContent {
     titleAr: string;
     titleEn: string;
     videoUrl?: string;
-    videoThumbnail?: string;
+    thumbnailImage?: string;
   };
   seo?: SEOData;
   featuredProducts: Array<{
@@ -208,7 +208,7 @@ class ApiService {
 
       if (!response.ok) {
         console.warn(
-          `API request failed: ${response.status} ${response.statusText} for ${endpoint}`
+          `API request failed: ${response.status} ${response.statusText} for ${endpoint}`,
         );
         return null;
       }
@@ -224,7 +224,7 @@ class ApiService {
   async getHomeContent(country: string): Promise<HomeContent> {
     try {
       const data = await this.fetchWithErrorHandling<any>(
-        `/home-content?country=${encodeURIComponent(country)}`
+        `/home-content?country=${encodeURIComponent(country)}`,
       );
 
       // Handle the new API response structure
@@ -270,7 +270,7 @@ class ApiService {
   async getActiveCollections(): Promise<Collection[]> {
     try {
       const data = await this.fetchWithErrorHandling<any>(
-        "/collections/active"
+        "/collections/active",
       );
       if (data?.data?.collections) {
         return validateCollections(data.data.collections);
@@ -279,7 +279,7 @@ class ApiService {
     } catch (error) {
       console.warn(
         "Failed to fetch collections, returning empty array:",
-        error
+        error,
       );
       return [];
     }
@@ -295,7 +295,7 @@ class ApiService {
     } catch (error) {
       console.warn(
         "Failed to fetch all collections, returning empty array:",
-        error
+        error,
       );
       return [];
     }
@@ -309,7 +309,7 @@ class ApiService {
       }
 
       const data = await this.fetchWithErrorHandling<any>(
-        `/collections/${encodeURIComponent(id)}`
+        `/collections/${encodeURIComponent(id)}`,
       );
       if (data?.data?.collection) {
         return validateCollection(data.data.collection);
@@ -344,7 +344,7 @@ class ApiService {
     } catch (error) {
       console.warn(
         "Failed to fetch all categories, returning empty array:",
-        error
+        error,
       );
       return [];
     }
@@ -358,7 +358,7 @@ class ApiService {
       }
 
       const data = await this.fetchWithErrorHandling<any>(
-        `/categories/${encodeURIComponent(id)}`
+        `/categories/${encodeURIComponent(id)}`,
       );
       if (data?.data?.category) {
         return validateCategory(data.data.category);
@@ -380,21 +380,21 @@ class ApiService {
     } catch (error) {
       console.warn(
         "Failed to fetch featured products, returning empty array:",
-        error
+        error,
       );
       return [];
     }
   }
 
   async getAllProducts(
-    params?: Record<string, string>
+    params?: Record<string, string>,
   ): Promise<{ products: Product[]; total: number }> {
     try {
       const queryParams = params
         ? `?${new URLSearchParams(params).toString()}`
         : "";
       const data = await this.fetchWithErrorHandling<any>(
-        `/products${queryParams}`
+        `/products${queryParams}`,
       );
 
       if (data?.data?.products) {
@@ -418,7 +418,7 @@ class ApiService {
       }
 
       const data = await this.fetchWithErrorHandling<any>(
-        `/products/${encodeURIComponent(id)}`
+        `/products/${encodeURIComponent(id)}`,
       );
       if (data?.data?.product) {
         return validateProduct(data.data.product);
@@ -438,7 +438,7 @@ class ApiService {
       }
 
       const data = await this.fetchWithErrorHandling<any>(
-        `/products/search?query=${encodeURIComponent(query)}`
+        `/products/search?query=${encodeURIComponent(query)}`,
       );
       if (data?.data?.products) {
         return validateProducts(data.data.products);
@@ -457,7 +457,7 @@ class ApiService {
     } catch (error) {
       console.warn(
         "Failed to fetch testimonials, returning empty array:",
-        error
+        error,
       );
       return [];
     }
@@ -471,7 +471,7 @@ class ApiService {
       }
 
       const data = await this.fetchWithErrorHandling<any>(
-        `/products/collection/${encodeURIComponent(collectionId)}`
+        `/products/collection/${encodeURIComponent(collectionId)}`,
       );
       if (data?.data?.products) {
         return validateProducts(data.data.products);
@@ -480,7 +480,7 @@ class ApiService {
     } catch (error) {
       console.warn(
         `Failed to fetch products for collection ${collectionId}:`,
-        error
+        error,
       );
       return [];
     }
@@ -494,7 +494,7 @@ class ApiService {
       }
 
       const data = await this.fetchWithErrorHandling<any>(
-        `/products/category/${encodeURIComponent(categoryId)}`
+        `/products/category/${encodeURIComponent(categoryId)}`,
       );
       if (data?.data?.products) {
         return validateProducts(data.data.products);
@@ -503,7 +503,7 @@ class ApiService {
     } catch (error) {
       console.warn(
         `Failed to fetch products for category ${categoryId}:`,
-        error
+        error,
       );
       return [];
     }
@@ -511,7 +511,7 @@ class ApiService {
 
   async getSEOData(
     page: string,
-    params?: Record<string, string>
+    params?: Record<string, string>,
   ): Promise<SEOData> {
     try {
       if (!page || typeof page !== "string") {
@@ -523,7 +523,7 @@ class ApiService {
         ? `?${new URLSearchParams(params).toString()}`
         : "";
       const data = await this.fetchWithErrorHandling<any>(
-        `/seo/${encodeURIComponent(page)}${queryParams}`
+        `/seo/${encodeURIComponent(page)}${queryParams}`,
       );
       return validateSEOData(data);
     } catch (error) {

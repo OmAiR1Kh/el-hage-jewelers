@@ -15,6 +15,8 @@ export function VideoSection() {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  console.log({ homeContent });
+
   useEffect(() => {
     const fetchHomeContent = async () => {
       try {
@@ -55,8 +57,12 @@ export function VideoSection() {
   };
 
   const getVideoThumbnail = () => {
-    if (homeContent?.videoSection?.videoThumbnail) {
-      return homeContent.videoSection.videoThumbnail;
+    if (homeContent?.videoSection?.thumbnailImage) {
+      return homeContent.videoSection.thumbnailImage;
+    }
+    // Fallback to hero video thumbnail if hero section has video enabled
+    if (homeContent?.hero?.useVideo && homeContent?.hero?.videoThumbnail) {
+      return homeContent.hero.videoThumbnail;
     }
     return "/placeholder.svg?height=720&width=1280";
   };
