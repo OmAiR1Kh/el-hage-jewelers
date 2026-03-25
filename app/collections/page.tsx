@@ -25,7 +25,6 @@ function CollectionsPageContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filterBy, setFilterBy] = useState<"all" | "featured">("all");
-  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -37,7 +36,6 @@ function CollectionsPageContent() {
         console.error("Failed to fetch collections:", error);
       } finally {
         setIsLoading(false);
-        setTimeout(() => setShowContent(true), 150);
       }
     };
 
@@ -136,16 +134,15 @@ function CollectionsPageContent() {
 
   return (
     <PageTransition>
-      {showContent && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="min-h-screen bg-gray-50"
-        >
-          <Navbar />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="min-h-screen bg-gray-50"
+      >
+        <Navbar />
 
-          <div className="pt-16 lg:pt-20">
+        <div className="pt-16 lg:pt-20">
           {/* Header */}
           <section className="bg-white border-b border-gray-200">
             <div className="container-responsive py-8 sm:py-12">
@@ -390,9 +387,8 @@ function CollectionsPageContent() {
               </>
             )}
           </section>
-          </div>
-        </motion.div>
-      )}
+        </div>
+      </motion.div>
     </PageTransition>
   );
 }

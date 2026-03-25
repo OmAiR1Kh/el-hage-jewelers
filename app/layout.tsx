@@ -4,6 +4,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/components/providers/language-provider";
 import { LocationProvider } from "@/components/providers/location-provider";
+import { RouteTransition } from "@/components/ui/route-transition";
 import { generateStructuredData } from "@/lib/seo";
 import { Footer } from "@/components/ui/footer";
 import WhatsAppIcon from "@/components/whatsapp";
@@ -127,7 +128,7 @@ export default function RootLayout({
       >
         <LocationProvider>
           <LanguageProvider>
-            {children}
+            <RouteTransition>{children}</RouteTransition>
             <Footer />
           </LanguageProvider>
         </LocationProvider>

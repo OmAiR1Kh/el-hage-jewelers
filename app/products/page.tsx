@@ -43,7 +43,6 @@ function ProductsPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [showContent, setShowContent] = useState(false);
   const [filters, setFilters] = useState<Filters>({
     category: "",
     metalType: "",
@@ -211,7 +210,6 @@ function ProductsPageContent() {
       }
     } finally {
       setIsLoading(false);
-      setTimeout(() => setShowContent(true), 150);
     }
   };
 
@@ -501,329 +499,322 @@ function ProductsPageContent() {
 
   return (
     <PageTransition>
-      {showContent && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="min-h-screen bg-gray-50"
-        >
-          <Navbar />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="min-h-screen bg-gray-50"
+      >
+        <Navbar />
 
-          <div className="pt-16 lg:pt-20">
-            {/* Header */}
-            <section className="bg-white border-b border-gray-200">
-              <div className="container-responsive py-8 sm:py-12">
-                <FadeIn>
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-playfair font-bold text-gray-900 mb-4">
-                    {language === "ar" ? "منتجاتنا" : "Our Products"}
-                  </h1>
-                  <p className="text-lg text-gray-600 max-w-2xl">
-                    {language === "ar"
-                      ? "اكتشف مجموعتنا الرائعة من المجوهرات الفاخرة المصنوعة بعناية فائقة"
-                      : "Discover our exquisite collection of luxury jewelry crafted with exceptional care"}
-                  </p>
-                </FadeIn>
-              </div>
-            </section>
+        <div className="pt-16 lg:pt-20">
+          {/* Header */}
+          <section className="bg-white border-b border-gray-200">
+            <div className="container-responsive py-8 sm:py-12">
+              <FadeIn>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-playfair font-bold text-gray-900 mb-4">
+                  {language === "ar" ? "منتجاتنا" : "Our Products"}
+                </h1>
+                <p className="text-lg text-gray-600 max-w-2xl">
+                  {language === "ar"
+                    ? "اكتشف مجموعتنا الرائعة من المجوهرات الفاخرة المصنوعة بعناية فائقة"
+                    : "Discover our exquisite collection of luxury jewelry crafted with exceptional care"}
+                </p>
+              </FadeIn>
+            </div>
+          </section>
 
-            {/* Filters */}
-            <section className="bg-white border-b border-gray-200">
-              <div className="container-responsive py-4">
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                  {/* Search */}
-                  <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <Input
-                      type="text"
-                      placeholder={
-                        language === "ar"
-                          ? "البحث في المنتجات..."
-                          : "Search products..."
-                      }
-                      value={filters.search}
-                      onChange={(e) =>
-                        handleFilterChange("search", e.target.value)
-                      }
-                      className="pl-10"
-                    />
-                  </div>
-
-                  {/* Filter Toggle */}
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowFilters(!showFilters)}
-                    className="flex items-center gap-2"
-                  >
-                    <Filter className="h-4 w-4" />
-                    {language === "ar" ? "الفلاتر" : "Filters"}
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${
-                        showFilters ? "rotate-180" : ""
-                      }`}
-                    />
-                  </Button>
+          {/* Filters */}
+          <section className="bg-white border-b border-gray-200">
+            <div className="container-responsive py-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                {/* Search */}
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <Input
+                    type="text"
+                    placeholder={
+                      language === "ar"
+                        ? "البحث في المنتجات..."
+                        : "Search products..."
+                    }
+                    value={filters.search}
+                    onChange={(e) =>
+                      handleFilterChange("search", e.target.value)
+                    }
+                    className="pl-10"
+                  />
                 </div>
 
-                {/* Filter Options */}
-                {showFilters && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-4 p-4 bg-gray-50 rounded-lg"
-                  >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* Category Filter */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          {language === "ar" ? "الفئة" : "Category"}
-                        </label>
-                        <select
-                          value={filters.category}
-                          onChange={(e) =>
-                            handleFilterChange("category", e.target.value)
-                          }
-                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
-                        >
-                          <option value="">
-                            {language === "ar"
-                              ? "جميع الفئات"
-                              : "All Categories"}
-                          </option>
-                          {categories.map((category) => (
-                            <option key={category._id} value={category._id}>
-                              {language === "ar"
-                                ? category.nameAr
-                                : category.nameEn}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Metal Type Filter */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          {language === "ar" ? "نوع المعدن" : "Metal Type"}
-                        </label>
-                        <select
-                          value={filters.metalType}
-                          onChange={(e) =>
-                            handleFilterChange("metalType", e.target.value)
-                          }
-                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
-                        >
-                          <option value="">
-                            {language === "ar" ? "جميع المعادن" : "All Metals"}
-                          </option>
-                          {metalTypes.map((metal) => (
-                            <option key={metal.value} value={metal.value}>
-                              {language === "ar"
-                                ? metal.labelAr
-                                : metal.labelEn}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Clear Filters */}
-                      <div className="flex items-end">
-                        <Button
-                          variant="outline"
-                          onClick={clearFilters}
-                          className="w-full flex items-center justify-center gap-2 bg-transparent"
-                        >
-                          <X className="h-4 w-4" />
-                          {language === "ar" ? "مسح الفلاتر" : "Clear Filters"}
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
+                {/* Filter Toggle */}
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2"
+                >
+                  <Filter className="h-4 w-4" />
+                  {language === "ar" ? "الفلاتر" : "Filters"}
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${
+                      showFilters ? "rotate-180" : ""
+                    }`}
+                  />
+                </Button>
               </div>
-            </section>
 
-            {/* Products Grid */}
-            <section className="container-responsive spacing-section">
-              {filteredAndSortedProducts.length === 0 ? (
-                <FadeIn className="text-center py-12">
-                  <div className="max-w-md mx-auto">
-                    <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Search className="h-12 w-12 text-gray-400" />
+              {/* Filter Options */}
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 p-4 bg-gray-50 rounded-lg"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Category Filter */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {language === "ar" ? "الفئة" : "Category"}
+                      </label>
+                      <select
+                        value={filters.category}
+                        onChange={(e) =>
+                          handleFilterChange("category", e.target.value)
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
+                      >
+                        <option value="">
+                          {language === "ar" ? "جميع الفئات" : "All Categories"}
+                        </option>
+                        {categories.map((category) => (
+                          <option key={category._id} value={category._id}>
+                            {language === "ar"
+                              ? category.nameAr
+                              : category.nameEn}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {language === "ar"
-                        ? "لم يتم العثور على منتجات"
-                        : "No products found"}
-                    </h3>
+
+                    {/* Metal Type Filter */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {language === "ar" ? "نوع المعدن" : "Metal Type"}
+                      </label>
+                      <select
+                        value={filters.metalType}
+                        onChange={(e) =>
+                          handleFilterChange("metalType", e.target.value)
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
+                      >
+                        <option value="">
+                          {language === "ar" ? "جميع المعادن" : "All Metals"}
+                        </option>
+                        {metalTypes.map((metal) => (
+                          <option key={metal.value} value={metal.value}>
+                            {language === "ar" ? metal.labelAr : metal.labelEn}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Clear Filters */}
+                    <div className="flex items-end">
+                      <Button
+                        variant="outline"
+                        onClick={clearFilters}
+                        className="w-full flex items-center justify-center gap-2 bg-transparent"
+                      >
+                        <X className="h-4 w-4" />
+                        {language === "ar" ? "مسح الفلاتر" : "Clear Filters"}
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </section>
+
+          {/* Products Grid */}
+          <section className="container-responsive spacing-section">
+            {filteredAndSortedProducts.length === 0 ? (
+              <FadeIn className="text-center py-12">
+                <div className="max-w-md mx-auto">
+                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="h-12 w-12 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {language === "ar"
+                      ? "لم يتم العثور على منتجات"
+                      : "No products found"}
+                  </h3>
+                  <p className="text-gray-600">
+                    {language === "ar"
+                      ? "جرب تغيير الفلاتر أو البحث عن شيء آخر"
+                      : "Try adjusting your filters or search for something else"}
+                  </p>
+                </div>
+              </FadeIn>
+            ) : (
+              <>
+                <FadeIn className="mb-8">
+                  <div className="flex items-center justify-between">
                     <p className="text-gray-600">
                       {language === "ar"
-                        ? "جرب تغيير الفلاتر أو البحث عن شيء آخر"
-                        : "Try adjusting your filters or search for something else"}
+                        ? `عرض ${filteredAndSortedProducts.length} منتج`
+                        : `Showing ${filteredAndSortedProducts.length} products`}
                     </p>
                   </div>
                 </FadeIn>
-              ) : (
-                <>
-                  <FadeIn className="mb-8">
-                    <div className="flex items-center justify-between">
-                      <p className="text-gray-600">
-                        {language === "ar"
-                          ? `عرض ${filteredAndSortedProducts.length} منتج`
-                          : `Showing ${filteredAndSortedProducts.length} products`}
-                      </p>
-                    </div>
-                  </FadeIn>
 
-                  <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredAndSortedProducts.map((product) => {
-                      const primaryImage =
-                        product.mainImg || "/placeholder.svg";
-                      const hoverImage = product.images?.[0] || primaryImage;
-                      const isHovered = hoveredProduct === product._id;
+                <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredAndSortedProducts.map((product) => {
+                    const primaryImage = product.mainImg || "/placeholder.svg";
+                    const hoverImage = product.images?.[0] || primaryImage;
+                    const isHovered = hoveredProduct === product._id;
 
-                      return (
-                        <StaggerItem key={product._id}>
-                          <motion.div
-                            whileHover={{ y: -8 }}
-                            transition={{ duration: 0.3 }}
-                            className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group relative cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct(product._id)}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            {/* Featured Badge */}
-                            {product.featured && (
-                              <div className="absolute top-3 right-3 z-10">
-                                <div className="bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-medium">
-                                  <Star className="h-3 w-3 fill-current" />
-                                  {language === "ar" ? "مميز" : "Featured"}
-                                </div>
+                    return (
+                      <StaggerItem key={product._id}>
+                        <motion.div
+                          whileHover={{ y: -8 }}
+                          transition={{ duration: 0.3 }}
+                          className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group relative cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct(product._id)}
+                          onMouseLeave={() => setHoveredProduct(null)}
+                        >
+                          {/* Featured Badge */}
+                          {product.featured && (
+                            <div className="absolute top-3 right-3 z-10">
+                              <div className="bg-yellow-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-medium">
+                                <Star className="h-3 w-3 fill-current" />
+                                {language === "ar" ? "مميز" : "Featured"}
                               </div>
-                            )}
+                            </div>
+                          )}
 
-                            <Link
-                              href={`/products/${product._id}`}
-                              className="block"
-                            >
-                              <div className="aspect-square overflow-hidden">
+                          <Link
+                            href={`/products/${product._id}`}
+                            className="block"
+                          >
+                            <div className="aspect-square overflow-hidden">
+                              <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                transition={{ duration: 0.5 }}
+                                className="w-full h-full relative"
+                              >
+                                {/* Primary Image */}
+                                <Image
+                                  src={primaryImage}
+                                  alt={getProductName(product)}
+                                  width={400}
+                                  height={400}
+                                  className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
+                                    isHovered ? "opacity-0" : "opacity-100"
+                                  }`}
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                  onError={(e) => {
+                                    console.error(
+                                      "Image load error for product:",
+                                      product._id,
+                                    );
+                                    e.currentTarget.src = "/placeholder.svg";
+                                  }}
+                                />
+
+                                {/* Hover Image */}
+                                <Image
+                                  src={hoverImage}
+                                  alt={getProductName(product)}
+                                  width={400}
+                                  height={400}
+                                  className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
+                                    isHovered ? "opacity-100" : "opacity-0"
+                                  }`}
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                  onError={(e) => {
+                                    console.error(
+                                      "Image load error for product:",
+                                      product._id,
+                                    );
+                                    e.currentTarget.src = "/placeholder.svg";
+                                  }}
+                                />
+                              </motion.div>
+                            </div>
+
+                            <div className="p-4 sm:p-6">
+                              <div className="mb-2">
+                                <span className="text-xs text-gray-500 uppercase tracking-wide">
+                                  {getCategoryName(product.categoryId)}
+                                </span>
+                              </div>
+
+                              <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors line-clamp-2">
+                                {getProductName(product)}
+                              </h3>
+
+                              {/* Description with smooth transition */}
+                              <div className="overflow-hidden">
                                 <motion.div
-                                  whileHover={{ scale: 1.05 }}
-                                  transition={{ duration: 0.5 }}
-                                  className="w-full h-full relative"
+                                  initial={{ height: 0, opacity: 0, y: -10 }}
+                                  animate={{
+                                    height: isHovered ? "auto" : 0,
+                                    opacity: isHovered ? 1 : 0,
+                                    y: isHovered ? 0 : -10,
+                                  }}
+                                  transition={{
+                                    duration: 0.5,
+                                    ease: [0.25, 0.1, 0.25, 1],
+                                    opacity: {
+                                      duration: 0.4,
+                                      delay: isHovered ? 0.1 : 0,
+                                    },
+                                    y: {
+                                      duration: 0.4,
+                                      delay: isHovered ? 0.1 : 0,
+                                    },
+                                  }}
+                                  className="text-sm text-gray-600 mb-3 line-clamp-2"
                                 >
-                                  {/* Primary Image */}
-                                  <Image
-                                    src={primaryImage}
-                                    alt={getProductName(product)}
-                                    width={400}
-                                    height={400}
-                                    className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
-                                      isHovered ? "opacity-0" : "opacity-100"
-                                    }`}
-                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                                    onError={(e) => {
-                                      console.error(
-                                        "Image load error for product:",
-                                        product._id,
-                                      );
-                                      e.currentTarget.src = "/placeholder.svg";
-                                    }}
-                                  />
-
-                                  {/* Hover Image */}
-                                  <Image
-                                    src={hoverImage}
-                                    alt={getProductName(product)}
-                                    width={400}
-                                    height={400}
-                                    className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-500 ${
-                                      isHovered ? "opacity-100" : "opacity-0"
-                                    }`}
-                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                                    onError={(e) => {
-                                      console.error(
-                                        "Image load error for product:",
-                                        product._id,
-                                      );
-                                      e.currentTarget.src = "/placeholder.svg";
-                                    }}
-                                  />
+                                  {getProductDescription(product)}
                                 </motion.div>
                               </div>
 
-                              <div className="p-4 sm:p-6">
-                                <div className="mb-2">
-                                  <span className="text-xs text-gray-500 uppercase tracking-wide">
-                                    {getCategoryName(product.categoryId)}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                                    {getMetalTypeName(product.metalType)}
                                   </span>
-                                </div>
-
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors line-clamp-2">
-                                  {getProductName(product)}
-                                </h3>
-
-                                {/* Description with smooth transition */}
-                                <div className="overflow-hidden">
-                                  <motion.div
-                                    initial={{ height: 0, opacity: 0, y: -10 }}
-                                    animate={{
-                                      height: isHovered ? "auto" : 0,
-                                      opacity: isHovered ? 1 : 0,
-                                      y: isHovered ? 0 : -10,
-                                    }}
-                                    transition={{
-                                      duration: 0.5,
-                                      ease: [0.25, 0.1, 0.25, 1],
-                                      opacity: {
-                                        duration: 0.4,
-                                        delay: isHovered ? 0.1 : 0,
-                                      },
-                                      y: {
-                                        duration: 0.4,
-                                        delay: isHovered ? 0.1 : 0,
-                                      },
-                                    }}
-                                    className="text-sm text-gray-600 mb-3 line-clamp-2"
-                                  >
-                                    {getProductDescription(product)}
-                                  </motion.div>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                                      {getMetalTypeName(product.metalType)}
+                                  {product.skuPrice && (
+                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                                      {product.skuPrice}
                                     </span>
-                                    {product.skuPrice && (
-                                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                                        {product.skuPrice}
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  {product.showPrice &&
-                                    product.price &&
-                                    typeof product.price === "number" && (
-                                      <div className="text-right">
-                                        <span className="text-lg font-bold text-gray-900">
-                                          ${product.price.toLocaleString()}
-                                        </span>
-                                      </div>
-                                    )}
+                                  )}
                                 </div>
+
+                                {product.showPrice &&
+                                  product.price &&
+                                  typeof product.price === "number" && (
+                                    <div className="text-right">
+                                      <span className="text-lg font-bold text-gray-900">
+                                        ${product.price.toLocaleString()}
+                                      </span>
+                                    </div>
+                                  )}
                               </div>
-                            </Link>
-                          </motion.div>
-                        </StaggerItem>
-                      );
-                    })}
-                  </StaggerContainer>
-                </>
-              )}
-            </section>
-          </div>
-        </motion.div>
-      )}
+                            </div>
+                          </Link>
+                        </motion.div>
+                      </StaggerItem>
+                    );
+                  })}
+                </StaggerContainer>
+              </>
+            )}
+          </section>
+        </div>
+      </motion.div>
     </PageTransition>
   );
 }
