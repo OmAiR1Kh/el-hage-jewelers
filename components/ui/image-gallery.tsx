@@ -108,7 +108,7 @@ export function ImageGallery({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center"
+        className="fixed inset-0 z-50 bg-black bg-opacity-95 w-screen h-screen overflow-hidden"
         onClick={onClose}
       >
         {/* Close Button */}
@@ -180,7 +180,7 @@ export function ImageGallery({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.3 }}
-          className={`relative max-w-[90vw] max-h-[90vh] ${
+          className={`relative max-w-[90vw] h-[90vh] m-auto flex items-center justify-center ${
             isZoomed ? "cursor-zoom-out" : "cursor-zoom-in"
           }`}
           onClick={(e) => {
