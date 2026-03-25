@@ -99,7 +99,7 @@ export function Footer() {
         title: "Quick Links",
         links: [
           { name: "Home", href: "/" },
-          { name: "Our Heritage", href: "/about" },
+          { name: "Our Legacy", href: "/about" },
           { name: "Collections", href: "/collections" },
           { name: "Products", href: "/products" },
           { name: "Contact Us", href: "/contact" },

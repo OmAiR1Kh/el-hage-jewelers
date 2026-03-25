@@ -1,62 +1,69 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { Search, Grid, List } from "lucide-react"
-import { Navbar } from "@/components/ui/navbar"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { useLanguage } from "@/components/providers/language-provider"
-import { apiService, type Category } from "@/lib/api"
-import { PageTransition } from "@/components/ui/page-transition"
-import { FadeIn } from "@/components/ui/fade-in"
-import { StaggerContainer, StaggerItem } from "@/components/ui/stagger-container"
-import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Search, Grid, List } from "lucide-react";
+import { Navbar } from "@/components/ui/navbar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/components/providers/language-provider";
+import { apiService, type Category } from "@/lib/api";
+import { PageTransition } from "@/components/ui/page-transition";
+import { FadeIn } from "@/components/ui/fade-in";
+import {
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/ui/stagger-container";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 function CategoriesPageContent() {
-  const { language } = useLanguage()
-  const [categories, setCategories] = useState<Category[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const { language } = useLanguage();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        setIsLoading(true)
-        const data = await apiService.getActiveCategories()
-        setCategories(data || [])
+        setIsLoading(true);
+        const data = await apiService.getActiveCategories();
+        setCategories(data || []);
       } catch (error) {
-        console.error("Failed to fetch categories:", error)
+        console.error("Failed to fetch categories:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
+        setTimeout(() => setShowContent(true), 150);
       }
-    }
+    };
 
-    fetchCategories()
-  }, [])
+    fetchCategories();
+  }, []);
 
   const filteredCategories = categories.filter((category) => {
-    if (!searchQuery) return true
+    if (!searchQuery) return true;
 
-    const name = language === "ar" ? category.nameAr : category.nameEn
-    const description = language === "ar" ? category.descriptionAr : category.descriptionEn
+    const name = language === "ar" ? category.nameAr : category.nameEn;
+    const description =
+      language === "ar" ? category.descriptionAr : category.descriptionEn;
 
     return (
       name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (description && description.toLowerCase().includes(searchQuery.toLowerCase()))
-    )
-  })
+      (description &&
+        description.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  });
 
   const getCategoryName = (category: Category) => {
-    return language === "ar" ? category.nameAr : category.nameEn
-  }
+    return language === "ar" ? category.nameAr : category.nameEn;
+  };
 
   const getCategoryDescription = (category: Category) => {
-    return language === "ar" ? category.descriptionAr : category.descriptionEn
-  }
+    return language === "ar" ? category.descriptionAr : category.descriptionEn;
+  };
 
   if (isLoading) {
     return (
@@ -68,7 +75,10 @@ function CategoriesPageContent() {
               <div className="h-12 bg-gray-200 rounded w-1/3 mb-8"></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                  <div
+                    key={i}
+                    className="bg-white rounded-lg shadow-sm overflow-hidden"
+                  >
                     <div className="aspect-square bg-gray-200"></div>
                     <div className="p-6">
                       <div className="h-6 bg-gray-200 rounded mb-2"></div>
@@ -81,7 +91,7 @@ function CategoriesPageContent() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -115,7 +125,11 @@ function CategoriesPageContent() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <Input
                     type="text"
-                    placeholder={language === "ar" ? "البحث في الفئات..." : "Search categories..."}
+                    placeholder={
+                      language === "ar"
+                        ? "البحث في الفئات..."
+                        : "Search categories..."
+                    }
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
@@ -156,7 +170,9 @@ function CategoriesPageContent() {
                     <Search className="h-12 w-12 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {language === "ar" ? "لم يتم العثور على فئات" : "No categories found"}
+                    {language === "ar"
+                      ? "لم يتم العثور على فئات"
+                      : "No categories found"}
                   </h3>
                   <p className="text-gray-600">
                     {language === "ar"
@@ -190,7 +206,10 @@ function CategoriesPageContent() {
                           transition={{ duration: 0.3 }}
                           className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group"
                         >
-                          <Link href={`/categories/${category._id}`} className="block">
+                          <Link
+                            href={`/categories/${category._id}`}
+                            className="block"
+                          >
                             <div className="aspect-square overflow-hidden">
                               <motion.div
                                 whileHover={{ scale: 1.05 }}
@@ -213,7 +232,9 @@ function CategoriesPageContent() {
                                 {getCategoryName(category)}
                               </h3>
                               {getCategoryDescription(category) && (
-                                <p className="text-gray-600 line-clamp-2">{getCategoryDescription(category)}</p>
+                                <p className="text-gray-600 line-clamp-2">
+                                  {getCategoryDescription(category)}
+                                </p>
                               )}
                             </div>
                           </Link>
@@ -224,7 +245,10 @@ function CategoriesPageContent() {
                           transition={{ duration: 0.3 }}
                           className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group"
                         >
-                          <Link href={`/categories/${category._id}`} className="flex items-center">
+                          <Link
+                            href={`/categories/${category._id}`}
+                            className="flex items-center"
+                          >
                             <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden">
                               <Image
                                 src={category.image || "/placeholder.svg"}
@@ -241,7 +265,9 @@ function CategoriesPageContent() {
                                 {getCategoryName(category)}
                               </h3>
                               {getCategoryDescription(category) && (
-                                <p className="text-gray-600">{getCategoryDescription(category)}</p>
+                                <p className="text-gray-600">
+                                  {getCategoryDescription(category)}
+                                </p>
                               )}
                             </div>
                           </Link>
@@ -256,7 +282,7 @@ function CategoriesPageContent() {
         </div>
       </div>
     </PageTransition>
-  )
+  );
 }
 
 export default function CategoriesPage() {
@@ -264,5 +290,5 @@ export default function CategoriesPage() {
     <ErrorBoundary>
       <CategoriesPageContent />
     </ErrorBoundary>
-  )
+  );
 }

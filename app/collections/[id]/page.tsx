@@ -41,7 +41,9 @@ function CollectionPageContent() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [videoError, setVideoError] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const metalTypes = [
     { value: "gold", labelEn: "Gold", labelAr: "ذهب" },
@@ -84,24 +86,69 @@ function CollectionPageContent() {
     fetchData();
   }, [params.id, router]);
 
-  // Handle video auto-play
+  // Detect if mobile device
   useEffect(() => {
-    const video = videoRef.current;
-    if (video && collection?.bannerVideo && !videoError) {
-      const playVideo = async () => {
-        try {
-          await video.play();
-        } catch (error) {
-          console.error("Video autoplay failed:", error);
-          // Autoplay might be blocked, that's fine
-        }
-      };
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
-      if (videoLoaded) {
-        playVideo();
+  // Attempt autoplay immediately and on load
+  useEffect(() => {
+    const attemptAutoplay = () => {
+      if (videoRef.current && !isPlaying) {
+        videoRef.current
+          .play()
+          .then(() => {
+            setIsPlaying(true);
+            console.log("Autoplay succeeded");
+          })
+          .catch((error) => {
+            console.warn("Autoplay failed:", error.message);
+            // Don't log power-saving pauses
+            if (!error.message.includes("paused to save power")) {
+              // Will retry on user interaction
+            }
+          });
       }
-    }
-  }, [collection?.bannerVideo, videoError, videoLoaded]);
+    };
+
+    // Try autoplay after a short delay to ensure video is ready
+    const timer = setTimeout(attemptAutoplay, 500);
+    return () => clearTimeout(timer);
+  }, [videoLoaded, isPlaying]);
+
+  // Force video play on user interaction (click, tap, scroll)
+  useEffect(() => {
+    const playOnInteraction = () => {
+      if (videoRef.current && !isPlaying) {
+        videoRef.current
+          .play()
+          .then(() => {
+            setIsPlaying(true);
+            console.log("Play on interaction succeeded");
+          })
+          .catch((error) => {
+            console.error("Play on interaction failed:", error);
+          });
+      }
+    };
+
+    // Add multiple interaction types for better mobile support
+    const events = ["click", "touchstart", "touchend", "scroll"];
+    events.forEach((event) => {
+      document.addEventListener(event, playOnInteraction, { once: true });
+    });
+
+    return () => {
+      events.forEach((event) => {
+        document.removeEventListener(event, playOnInteraction);
+      });
+    };
+  }, [isPlaying]);
 
   const getCollectionName = (collection: Collection) => {
     return language === "ar" ? collection.nameAr : collection.nameEn;
@@ -164,6 +211,24 @@ function CollectionPageContent() {
 
   const handleVideoLoad = () => {
     setVideoLoaded(true);
+    const tryPlay = () => {
+      if (videoRef.current && !isPlaying) {
+        videoRef.current
+          .play()
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((error) => {
+            console.error("Video autoplay failed:", error);
+            // Don't retry if it's a power-saving pause
+            if (!error.message.includes("paused to save power")) {
+              // Try again in 1 second
+              setTimeout(tryPlay, 1000);
+            }
+          });
+      }
+    };
+    tryPlay();
   };
 
   // Gallery images (limit to 2)
@@ -309,7 +374,7 @@ function CollectionPageContent() {
                 />
               </div>
 
-              {/* Mobile: Video */}
+              {/* Mobile: Video - Using Video Element with All Required Attributes */}
               <div className="relative aspect-video bg-gray-100 overflow-hidden group">
                 {collection.bannerVideo && !videoError ? (
                   <>
@@ -319,10 +384,15 @@ function CollectionPageContent() {
                       muted
                       loop
                       playsInline
+                      autoPlay
                       preload="metadata"
                       onError={handleVideoError}
-                      onLoadedData={handleVideoLoad}
+                      onLoadedMetadata={handleVideoLoad}
+                      onCanPlay={handleVideoLoad}
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
                       poster={collection.thumbnailImage}
+                      controlsList="nodownload"
                     >
                       <source src={collection.bannerVideo} type="video/mp4" />
                       <source src={collection.bannerVideo} type="video/webm" />
@@ -336,6 +406,23 @@ function CollectionPageContent() {
                           <span>Loading video...</span>
                         </div>
                       </div>
+                    )}
+
+                    {/* Play Button Overlay for Mobile */}
+                    {isMobile && !isPlaying && videoLoaded && (
+                      <button
+                        onClick={() => {
+                          if (videoRef.current) {
+                            videoRef.current.play();
+                            setIsPlaying(true);
+                          }
+                        }}
+                        className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors group-hover:bg-black/30"
+                      >
+                        <div className="bg-white/90 rounded-full p-4 backdrop-blur-sm">
+                          <Play className="h-8 w-8 text-gray-900 fill-gray-900" />
+                        </div>
+                      </button>
                     )}
                   </>
                 ) : (
@@ -384,10 +471,15 @@ function CollectionPageContent() {
                           muted
                           loop
                           playsInline
+                          autoPlay
                           preload="metadata"
                           onError={handleVideoError}
-                          onLoadedData={handleVideoLoad}
+                          onLoadedMetadata={handleVideoLoad}
+                          onCanPlay={handleVideoLoad}
+                          onPlay={() => setIsPlaying(true)}
+                          onPause={() => setIsPlaying(false)}
                           poster={collection.thumbnailImage}
+                          controlsList="nodownload"
                         >
                           <source
                             src={collection.bannerVideo}

@@ -130,58 +130,54 @@ function HeroSectionContent() {
         onComplete={() => setShowContent(true)}
       />
 
-      {/* Mobile Hero - Original Design */}
-      <section className="lg:hidden relative h-screen overflow-hidden">
-        {/* Background Media */}
-        <motion.div
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.5, ease: [0.25, 0.25, 0, 1] }}
-          className="absolute inset-0"
-        >
-          {useVideo && heroVideo ? (
-            <div className="absolute inset-0">
-              <video
-                ref={videoRef}
-                src={heroVideo}
-                className="w-full h-full object-cover"
-                muted
-                loop
-                playsInline
-                autoPlay
-                preload="auto"
-                style={{ pointerEvents: "none" }}
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-30" />
-            </div>
-          ) : (
-            <div className="absolute inset-0">
-              <Image
-                src={heroImage || "/placeholder.svg"}
-                alt="Hero"
-                fill
-                className="object-cover"
-                priority
-                sizes="100vw"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40" />
-            </div>
-          )}
-        </motion.div>
-
-        {/* Content Overlay */}
+      {/* Mobile Hero - Vertical Layout */}
+      <section className="lg:hidden relative overflow-hidden bg-white">
         {showContent && (
-          <div className="relative z-10 h-full flex items-center justify-center">
-            <div className="text-center text-white container-responsive">
+          <div className="flex flex-col pt-16">
+            {/* Video/Image */}
+            <motion.div
+              initial={{ scale: 1.1 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden"
+              style={{ willChange: "transform" }}
+            >
+              {useVideo && heroVideo ? (
+                <video
+                  ref={videoRef}
+                  src={heroVideo}
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  preload="auto"
+                  style={{ pointerEvents: "none" }}
+                />
+              ) : (
+                <Image
+                  src={heroImage || "/placeholder.svg"}
+                  alt="Hero"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="100vw"
+                />
+              )}
+            </motion.div>
+
+            {/* Text Content */}
+            <div className="text-center container-responsive py-8">
               <motion.h1
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
                   duration: 0.8,
                   delay: 0.3,
-                  ease: [0.25, 0.25, 0, 1],
+                  ease: "easeOut",
                 }}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-playfair font-bold mb-4 sm:mb-6 text-shadow leading-tight"
+                className="text-4xl sm:text-5xl md:text-6xl font-playfair font-bold mb-4 sm:mb-6 text-gray-900 leading-tight"
+                style={{ willChange: "transform, opacity" }}
               >
                 {getHeroTitle()}
               </motion.h1>
@@ -192,9 +188,10 @@ function HeroSectionContent() {
                 transition={{
                   duration: 0.8,
                   delay: 0.6,
-                  ease: [0.25, 0.25, 0, 1],
+                  ease: "easeOut",
                 }}
-                className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-shadow max-w-2xl mx-auto leading-relaxed"
+                className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-gray-600 max-w-2xl mx-auto leading-relaxed"
+                style={{ willChange: "transform, opacity" }}
               >
                 {getHeroSubtitle()}
               </motion.p>
@@ -205,54 +202,22 @@ function HeroSectionContent() {
                 transition={{
                   duration: 0.8,
                   delay: 0.9,
-                  ease: [0.25, 0.25, 0, 1],
+                  ease: "easeOut",
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                style={{ willChange: "transform, opacity" }}
               >
                 <Button
                   asChild
                   size="lg"
-                  className="bg-white text-black hover:bg-gray-100 px-6 sm:px-8 py-3 text-base sm:text-lg font-medium transition-all duration-300 focus-visible"
+                  className="bg-gray-900 text-white hover:bg-gray-800 px-6 sm:px-8 py-3 text-base sm:text-lg font-medium transition-all duration-300 focus-visible"
                 >
                   <a href={getHeroButtonLink()}>{getHeroButtonText()}</a>
                 </Button>
               </motion.div>
             </div>
           </div>
-        )}
-
-        {/* Scroll Indicator */}
-        {showContent && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.5 }}
-            className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-white md:hidden"
-          >
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{
-                duration: 2,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "easeInOut",
-              }}
-              className="flex flex-col items-center"
-            >
-              <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-                <motion.div
-                  animate={{ y: [0, 12, 0] }}
-                  transition={{
-                    duration: 2,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  }}
-                  className="w-1 h-3 bg-white rounded-full mt-2"
-                />
-              </div>
-              <span className="text-xs mt-2 opacity-75">Scroll</span>
-            </motion.div>
-          </motion.div>
         )}
       </section>
 
@@ -268,9 +233,10 @@ function HeroSectionContent() {
                 transition={{
                   duration: 1,
                   delay: 0.3,
-                  ease: [0.25, 0.25, 0, 1],
+                  ease: "easeOut",
                 }}
                 className="flex-[0_0_70%] relative aspect-video bg-gray-100 rounded-lg overflow-hidden !pl-0"
+                style={{ willChange: 'transform, opacity' }}
               >
                 {useVideo && heroVideo ? (
                   <video
@@ -303,9 +269,10 @@ function HeroSectionContent() {
                 transition={{
                   duration: 1,
                   delay: 0.6,
-                  ease: [0.25, 0.25, 0, 1],
+                  ease: "easeOut",
                 }}
                 className="flex-1 space-y-8"
+                style={{ willChange: 'transform, opacity' }}
               >
                 <motion.h1
                   initial={{ opacity: 0, y: 30 }}
@@ -313,9 +280,10 @@ function HeroSectionContent() {
                   transition={{
                     duration: 0.8,
                     delay: 0.9,
-                    ease: [0.25, 0.25, 0, 1],
+                    ease: "easeOut",
                   }}
                   className="text-4xl xl:text-5xl 2xl:text-6xl font-playfair font-bold text-gray-900 leading-tight"
+                  style={{ willChange: 'transform, opacity' }}
                 >
                   {getHeroTitle()}
                 </motion.h1>
@@ -326,9 +294,10 @@ function HeroSectionContent() {
                   transition={{
                     duration: 0.8,
                     delay: 1.2,
-                    ease: [0.25, 0.25, 0, 1],
+                    ease: "easeOut",
                   }}
                   className="text-lg xl:text-xl text-gray-600 leading-relaxed"
+                  style={{ willChange: 'transform, opacity' }}
                 >
                   {getHeroSubtitle()}
                 </motion.p>
@@ -339,10 +308,11 @@ function HeroSectionContent() {
                   transition={{
                     duration: 0.8,
                     delay: 1.5,
-                    ease: [0.25, 0.25, 0, 1],
+                    ease: "easeOut",
                   }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  style={{ willChange: 'transform, opacity' }}
                 >
                   <Button
                     asChild

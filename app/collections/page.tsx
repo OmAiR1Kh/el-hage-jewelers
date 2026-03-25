@@ -25,6 +25,7 @@ function CollectionsPageContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filterBy, setFilterBy] = useState<"all" | "featured">("all");
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -36,6 +37,7 @@ function CollectionsPageContent() {
         console.error("Failed to fetch collections:", error);
       } finally {
         setIsLoading(false);
+        setTimeout(() => setShowContent(true), 150);
       }
     };
 
@@ -82,16 +84,41 @@ function CollectionsPageContent() {
       <div className="min-h-screen">
         <Navbar />
         <div className="pt-16 lg:pt-20">
-          <div className="container-responsive spacing-section">
+          {/* Header Skeleton */}
+          <section className="bg-white border-b border-gray-200">
+            <div className="container-responsive py-8 sm:py-12">
+              <div className="animate-pulse">
+                <div className="h-12 bg-gray-200 rounded w-1/3 mb-4"></div>
+                <div className="h-6 bg-gray-200 rounded w-full max-w-2xl"></div>
+              </div>
+            </div>
+          </section>
+
+          {/* Search and Filters Skeleton */}
+          <section className="bg-white border-b border-gray-200">
+            <div className="container-responsive py-4">
+              <div className="animate-pulse">
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                  <div className="h-12 bg-gray-200 rounded w-full max-w-md"></div>
+                  <div className="flex gap-4">
+                    <div className="h-10 bg-gray-200 rounded w-20"></div>
+                    <div className="h-10 bg-gray-200 rounded w-20"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Collections Grid Skeleton */}
+          <section className="container-responsive spacing-section">
             <div className="animate-pulse">
-              <div className="h-12 bg-gray-200 rounded w-1/3 mb-8"></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
                   <div
                     key={i}
                     className="bg-white rounded-lg shadow-sm overflow-hidden"
                   >
-                    <div className="aspect-video bg-gray-200"></div>
+                    <div className="aspect-video bg-gray-100"></div>
                     <div className="p-6">
                       <div className="h-6 bg-gray-200 rounded mb-2"></div>
                       <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -101,7 +128,7 @@ function CollectionsPageContent() {
                 ))}
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     );
@@ -109,10 +136,16 @@ function CollectionsPageContent() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
+      {showContent && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="min-h-screen bg-gray-50"
+        >
+          <Navbar />
 
-        <div className="pt-16 lg:pt-20">
+          <div className="pt-16 lg:pt-20">
           {/* Header */}
           <section className="bg-white border-b border-gray-200">
             <div className="container-responsive py-8 sm:py-12">
@@ -357,8 +390,9 @@ function CollectionsPageContent() {
               </>
             )}
           </section>
-        </div>
-      </div>
+          </div>
+        </motion.div>
+      )}
     </PageTransition>
   );
 }

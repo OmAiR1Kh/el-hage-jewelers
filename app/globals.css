@@ -10,6 +10,10 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
   }
   body {
     @apply bg-background text-foreground;
@@ -224,7 +228,10 @@
 
 /* Smooth transitions */
 * {
-  transition: all 0.2s ease-in-out;
+  transition:
+    color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
 }
 
 /* Custom scrollbar */
