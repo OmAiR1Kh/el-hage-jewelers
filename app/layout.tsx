@@ -128,8 +128,10 @@ export default function RootLayout({
       >
         <LocationProvider>
           <LanguageProvider>
-            <RouteTransition>{children}</RouteTransition>
-            <Footer />
+            <RouteTransition>
+              {children}
+              <Footer />
+            </RouteTransition>
           </LanguageProvider>
         </LocationProvider>
         <WhatsAppIcon />
